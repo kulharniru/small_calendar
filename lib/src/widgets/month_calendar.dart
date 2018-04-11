@@ -42,16 +42,16 @@ class MonthCalendar extends StatefulWidget {
 }
 
 class _MonthCalendarState extends State<MonthCalendar> {
-  bool isActive;
-  List<DayData> days = <DayData>[];
+  bool _isActive;
+  List<DayData> _days = <DayData>[];
 
   @override
   void initState() {
     super.initState();
 
-    isActive = true;
+    _isActive = true;
 
-    days = generateDays();
+    _days = generateDays();
     widget.controller.addDayRefreshListener(onRefreshDays);
 
     refreshDaysData();
@@ -59,7 +59,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
 
   @override
   void dispose() {
-    isActive = false;
+    _isActive = false;
     widget.controller.removeDayRefreshListener(onRefreshDays);
 
     super.dispose();
@@ -75,7 +75,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
     }
 
     if (oldWidget.firstWeekday != widget.firstWeekday) {
-      days = generateDays();
+      _days = generateDays();
       refreshDaysData();
     }
   }
@@ -94,11 +94,11 @@ class _MonthCalendarState extends State<MonthCalendar> {
   }
 
   Future refreshDaysData() async {
-    for (int i = 0; i < days.length; i++) {
-      updateIsHasOfDay(days[i]).then((updatedDay) {
-        if (!isActive) return;
+    for (int i = 0; i < _days.length; i++) {
+      updateIsHasOfDay(_days[i]).then((updatedDay) {
+        if (!_isActive) return;
         setState(() {
-          days[i] = updatedDay;
+          _days[i] = updatedDay;
         });
       });
     }
@@ -162,8 +162,8 @@ class _MonthCalendarState extends State<MonthCalendar> {
   List<Widget> generateWeeks() {
     List<Widget> r = <Widget>[];
 
-    for (int i = 0; i < days.length; i += 7) {
-      Iterable<DayData> daysOfWeek = days.getRange(i, i + 7);
+    for (int i = 0; i < _days.length; i += 7) {
+      Iterable<DayData> daysOfWeek = _days.getRange(i, i + 7);
       r.add(
         generateWeek(daysOfWeek),
       );
