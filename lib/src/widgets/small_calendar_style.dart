@@ -11,8 +11,7 @@ class SmallCalendarStyle extends InheritedWidget {
     @required this.dayStyleData,
     @required this.weekdayIndicationStyleData,
     @required Widget child,
-  })
-      : super(child: child);
+  }) : super(child: child);
 
   factory SmallCalendarStyle({
     DayStyleData dayStyleData,

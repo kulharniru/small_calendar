@@ -19,8 +19,7 @@ class DayData {
     this.hasTick1 = false,
     this.hasTick2 = false,
     this.hasTick3 = false,
-  })
-      : assert(day != null),
+  })  : assert(day != null),
         assert(isToday != null),
         assert(isSelected != null),
         assert(hasTick1 != null),

@@ -13,8 +13,7 @@ class DayWidget extends StatelessWidget {
   DayWidget({
     @required this.dayData,
     @required this.onPressed,
-  })
-      : super(key: new ObjectKey(dayData.day));
+  }) : super(key: new ObjectKey(dayData.day));
 
   @override
   Widget build(BuildContext context) {

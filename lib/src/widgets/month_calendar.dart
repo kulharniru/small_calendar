@@ -34,8 +34,7 @@ class MonthCalendar extends StatefulWidget {
     @required this.dayNames,
     @required this.weekdayIndicationHeight,
     @required this.onDayPressed,
-  })
-      : super(key: new ObjectKey(month));
+  }) : super(key: new ObjectKey(month));
 
   @override
   State createState() => new _MonthCalendarState();
@@ -88,9 +87,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
     return generateExtendedDaysOfMonth(
       widget.month,
       widget.firstWeekday,
-    )
-        .map((day) => new DayData(day: day))
-        .toList();
+    ).map((day) => new DayData(day: day)).toList();
   }
 
   Future refreshDaysData() async {

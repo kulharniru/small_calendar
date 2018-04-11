@@ -1,5 +1,5 @@
 import 'data_test.dart' as testData;
 
-void main(){
+void main() {
   testData.main();
 }
