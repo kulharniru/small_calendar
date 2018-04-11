@@ -31,3 +31,8 @@ import 'package:small_calendar/small_calendar.dart';
 * **7.** - textTickSeparation 
 * **8.** - selectedColor
 * **9.** - todayColor
+
+## Tips
+
+If you call setState() inside onDisplayedMonthChanged the calendar ticks might flicker. 
+To avoid this save SmallCalendar widget as a variable and only create a new SmallCalendar when you really need to (as is done in example).
