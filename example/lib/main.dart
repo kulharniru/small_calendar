@@ -141,9 +141,7 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                         new RaisedButton(
                           child: new Text("Go to today"),
                           onPressed: () {
-                            setState(() {
                               smallCalendarController.goToToday();
-                            });
                           },
                         ),
                         new Container(
@@ -156,8 +154,12 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                           },
                         ),
                         new Divider(),
-                        new Text(
-                          """For example purpuses:
+new Container(
+  padding: new EdgeInsets.symmetric(horizontal: 16.0),
+  child:                         new Text(
+    """When you click on Refresh Button it might seem that nothing happened. But the calendar has actually refreshed, just that data is the same.
+
+For example purpuses:
                     * every first day of month has tick1
                     * every second day of month has tick2
                     * every third day of month has tick3
@@ -165,7 +167,8 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                     * every fifth day of month has tick1, tick2 and tick3
                     * every tenth day of month is selected
                     """,
-                        ),
+  ),
+),
                       ],
                     ),
                   ),
