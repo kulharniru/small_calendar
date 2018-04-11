@@ -3,8 +3,6 @@ import 'dart:ui';
 
 import 'package:small_calendar/src/callbacks.dart';
 
-typedef Future<bool> IsHasCallback(DateTime date);
-
 class SmallCalendarController {
   /// Future that returns true if specific date is today.
   final IsHasCallback isTodayCallback;

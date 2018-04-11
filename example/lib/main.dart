@@ -116,6 +116,7 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                               onChanged: (newValue) {
                                 setState(() {
                                   showWeekdayIndication = newValue;
+                                  smallCalendar = createSmallCalendar(context);
                                 });
                               },
                             ),
@@ -131,6 +132,7 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                                 onChanged: (newValue) {
                                   setState(() {
                                     showTicks = newValue;
+                                    smallCalendar = createSmallCalendar(context);
                                   });
                                 }),
                             new Text("Show Ticks"),
@@ -178,24 +180,24 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
 }
 
 SmallCalendarController createSmallCalendarController() {
-  Future<bool> hasTick1Callback(DateTime date) async {
-    if (date.day == 1 || date.day == 4 || date.day == 5) {
+  Future<bool> hasTick1Callback(DateTime day) async {
+    if (day.day == 1 || day.day == 4 || day.day == 5) {
       return true;
     }
 
     return false;
   }
 
-  Future<bool> hasTick2Callback(DateTime date) async {
-    if (date.day == 2 || date.day == 4 || date.day == 5) {
+  Future<bool> hasTick2Callback(DateTime day) async {
+    if (day.day == 2 || day.day == 4 || day.day == 5) {
       return true;
     }
 
     return false;
   }
 
-  Future<bool> hasTick3Callback(DateTime date) async {
-    if (date.day == 3 || date.day == 5) {
+  Future<bool> hasTick3Callback(DateTime day) async {
+    if (day.day == 3 || day.day == 5) {
       return true;
     }
 
@@ -203,8 +205,8 @@ SmallCalendarController createSmallCalendarController() {
   }
 
   return new SmallCalendarController(
-    isSelectedCallback: (DateTime date) async {
-      if (date.day == 10) {
+    isSelectedCallback: (DateTime day) async {
+      if (day.day == 10) {
         return true;
       }
 
