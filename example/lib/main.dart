@@ -21,15 +21,25 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
   SmallCalendarController smallCalendarController =
       createSmallCalendarController();
 
+  DateTime initialDate;
+
+  String displayedMonthText = "____";
+
+  Widget smallCalendar;
+
   @override
   void initState() {
     super.initState();
+
+    initialDate = new DateTime.now();
+    displayedMonthText = "Displaying ${initialDate.year}.${initialDate.month}";
   }
 
   Widget createSmallCalendar(BuildContext context) {
     return new SmallCalendar(
       firstWeekday: DateTime.monday,
       controller: smallCalendarController,
+      initialDate: initialDate,
       dayStyle: new DayStyleData(
         showTicks: showTicks,
         tick3Color: Colors.yellow[700],
@@ -44,14 +54,21 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
               ),
             ));
       },
-      onDisplayedMonthChanged: (int year, int month){
-        print("Displaying $year.$month");
+      onDisplayedMonthChanged: (int year, int month) {
+        setState(() {
+          displayedMonthText = "Displaying $year.$month";
+          print(displayedMonthText);
+        });
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (smallCalendar == null) {
+      smallCalendar = createSmallCalendar(context);
+    }
+
     return new MaterialApp(
       title: "small_calendar example",
       home: new Scaffold(
@@ -75,7 +92,7 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                         height: 250.0,
                         color: Theme.of(context).cardColor,
                         // Small Calendar ------------------------------------------
-                        child: createSmallCalendar(context),
+                        child: smallCalendar,
                         // ---------------------------------------------------------
                       ),
                     ),
@@ -87,6 +104,10 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                     child: new Column(
                       children: <Widget>[
                         // show weekday indication
+                        new Container(
+                          padding: new EdgeInsets.only(top: 4.0),
+                          child: new Text(displayedMonthText),
+                        ),
                         new Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -121,6 +142,15 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                             setState(() {
                               smallCalendarController.goToToday();
                             });
+                          },
+                        ),
+                        new Container(
+                          height: 8.0,
+                        ),
+                        new RaisedButton(
+                          child: new Text("Refresh"),
+                          onPressed: () {
+                            smallCalendarController.refreshDayInformation();
                           },
                         ),
                         new Divider(),
