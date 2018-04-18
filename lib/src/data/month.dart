@@ -67,12 +67,20 @@ class Month {
     if (year < other.year) {
       return true;
     }
-
     if (year > other.year) {
       return false;
     }
-
     return month < other.month;
+  }
+
+  bool isAfter(Month other){
+    if (year > other.year){
+      return true;
+    }
+    if (year < other.year){
+      return false;
+    }
+    return month > other.month;
   }
 
   static int getDifference(Month month1, Month month2) {

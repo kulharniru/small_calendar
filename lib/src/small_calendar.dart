@@ -133,6 +133,14 @@ class _SmallCalendarState extends State<SmallCalendar> {
 
       oldWidget.controller.removeDisplayedMonthProvider();
       widget.controller.setDisplayedMonthProvider(_displayedMonthProvider);
+
+      _monthPagerController = new MonthPagerController(
+        initialMonth: new Month.fromDateTime(widget.controller.initialDate),
+      );
+
+      setState(() {
+
+      });
     }
   }
 
