@@ -57,12 +57,9 @@ class _MonthCalendarState extends State<MonthCalendar> {
       oldWidget.controller.detachRefreshListener(onRefreshDays);
       widget.controller.attachRefreshListener(onRefreshDays);
 
-      _refreshDaysData();
+      // if the controller changes the days should be regenerated
+      _days = null;
     }
-  }
-
-  void onRefreshDays() {
-    _refreshDaysData();
   }
 
   void _initDays(int firstWeekday) {
@@ -71,6 +68,10 @@ class _MonthCalendarState extends State<MonthCalendar> {
       firstWeekday,
     ).map((day) => new DayData(day: day)).toList();
 
+    _refreshDaysData();
+  }
+
+  void onRefreshDays() {
     _refreshDaysData();
   }
 

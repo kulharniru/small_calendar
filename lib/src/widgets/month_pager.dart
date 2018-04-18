@@ -49,10 +49,9 @@ class MonthPager extends StatefulWidget {
   MonthPager({
     @required this.controller,
     @required this.monthPageBuilder,
-    @required this.onMonthChanged,
+    this.onMonthChanged,
   })  : assert(controller != null),
-        assert(monthPageBuilder != null),
-        assert(onMonthChanged != null);
+        assert(monthPageBuilder != null);
 
   final MonthPagerController controller;
 
@@ -87,7 +86,9 @@ class _MonthPagerState extends State<MonthPager> {
 
       Month month = _monthFromPage(_currentPage);
       widget.controller._notifyThatDisplayedMonthHasChanged(month);
-      widget.onMonthChanged(month);
+      if (widget.onMonthChanged != null) {
+        widget.onMonthChanged(month);
+      }
     }
   }
 

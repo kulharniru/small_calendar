@@ -8,8 +8,7 @@ class Month {
   Month(
     this.year,
     this.month,
-  )
-      : assert(year != null),
+  )   : assert(year != null),
         assert(month != null),
         assert(month >= 1 && month <= 12);
 
@@ -94,5 +93,9 @@ class Month {
       }
       return r;
     }
+  }
+
+  DateTime toDateTime() {
+    return new DateTime(year, month);
   }
 }
