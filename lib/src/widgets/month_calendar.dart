@@ -7,39 +7,23 @@ import '../data/all.dart';
 import '../small_calendar_controller.dart';
 import '../callbacks.dart';
 import '../generator.dart';
-import 'small_calendar_style.dart';
+import 'month_calendar_style.dart';
 import 'weekday_indicator.dart';
 import 'day_widget.dart';
 
 class MonthCalendar extends StatefulWidget {
   final Month month;
 
-  final int firstWeekday;
-
   final SmallCalendarController controller;
 
-  final bool showWeekdayIndication;
-  final List<int> weekdayIndicationDays;
-  final Map<int, String> dayNames;
-  final double weekdayIndicationHeight;
-
-  final DateTimeCallback onDayPressed;
+  final DateTimeCallback onDaySelected;
 
   MonthCalendar({
     @required this.month,
-    @required this.firstWeekday,
     @required this.controller,
-    @required this.showWeekdayIndication,
-    @required this.weekdayIndicationDays,
-    @required this.dayNames,
-    @required this.weekdayIndicationHeight,
-    @required this.onDayPressed,
-  }) : assert(month != null),
-  assert(firstWeekday != null),
-  assert(controller != null),
-  assert(showWeekdayIndication != null),
-  assert(weekdayIndicationDays != null),
-  assert(dayNames != null);
+    @required this.onDaySelected,
+  })  : assert(month != null),
+        assert(controller != null);
 
   @override
   _MonthCalendarState createState() => new _MonthCalendarState();
@@ -47,18 +31,14 @@ class MonthCalendar extends StatefulWidget {
 
 class _MonthCalendarState extends State<MonthCalendar> {
   bool _isActive;
-  List<DayData> _days = <DayData>[];
+  List<DayData> _days;
 
   @override
   void initState() {
     super.initState();
 
     _isActive = true;
-
-    _days = generateDays();
     widget.controller.addDayRefreshListener(onRefreshDays);
-
-    refreshDaysData();
   }
 
   @override
@@ -77,25 +57,22 @@ class _MonthCalendarState extends State<MonthCalendar> {
       oldWidget.controller.removeDayRefreshListener(onRefreshDays);
       widget.controller.addDayRefreshListener(onRefreshDays);
     }
-
-    if (oldWidget.firstWeekday != widget.firstWeekday) {
-      _days = generateDays();
-      refreshDaysData();
-    }
   }
 
   void onRefreshDays() {
-    refreshDaysData();
+    _refreshDaysData();
   }
 
-  List<DayData> generateDays() {
-    return generateExtendedDaysOfMonth(
+  void _initDays(int firstWeekday) {
+    _days = generateExtendedDaysOfMonth(
       widget.month,
-      widget.firstWeekday,
+      firstWeekday,
     ).map((day) => new DayData(day: day)).toList();
+
+    _refreshDaysData();
   }
 
-  Future refreshDaysData() async {
+  Future _refreshDaysData() async {
     for (int i = 0; i < _days.length; i++) {
       updateIsHasOfDay(_days[i]).then((updatedDay) {
         if (!_isActive) return;
@@ -120,18 +97,24 @@ class _MonthCalendarState extends State<MonthCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    MonthCalendarStyle styleInfo = MonthCalendarStyle.of(context);
+
+    if (_days == null) {
+      _initDays(styleInfo.firstWeekday);
+    }
+
     List<Widget> widgets = <Widget>[];
 
-    // weekday indication
-    if (widget.showWeekdayIndication) {
+    // builds weekday indication
+    if (styleInfo.showWeekdayIndication) {
       widgets.add(
-        generateWeekdayIndication(context),
+        _buildWeekdayIndication(context, styleInfo),
       );
     }
 
-    // weeks
+    // builds weeks
     widgets.addAll(
-      generateWeeks(),
+      _buildWeeks(),
     );
 
     return new Column(
@@ -140,52 +123,49 @@ class _MonthCalendarState extends State<MonthCalendar> {
     );
   }
 
-  Widget generateWeekdayIndication(BuildContext context) {
+  Widget _buildWeekdayIndication(
+    BuildContext context,
+    MonthCalendarStyle styleInfo,
+  ) {
     return new Container(
-      height: widget.weekdayIndicationHeight,
-      color: SmallCalendarStyle
-          .of(context)
-          .weekdayIndicationStyleData
-          .backgroundColor,
+      height: styleInfo.weekdayIndicationHeight,
+      color: styleInfo.weekdayIndicationStyleData.backgroundColor,
       child: new Row(
         mainAxisSize: MainAxisSize.max,
-        children: widget.weekdayIndicationDays
-            .map(
-              (day) => new Expanded(
-                    child:
-                        new WeekdayIndicator(text: "${widget.dayNames[day]}"),
+        children: styleInfo.weekdayIndicationDays
+            .map((day) => new Expanded(
+                  child: new WeekdayIndicator(
+                    text: "${styleInfo.dayNames[day]}",
                   ),
-            )
+                ))
             .toList(),
       ),
     );
   }
 
-  List<Widget> generateWeeks() {
+  List<Widget> _buildWeeks() {
     List<Widget> r = <Widget>[];
 
     for (int i = 0; i < _days.length; i += 7) {
       Iterable<DayData> daysOfWeek = _days.getRange(i, i + 7);
       r.add(
-        generateWeek(daysOfWeek),
+        _buildWeek(daysOfWeek),
       );
     }
 
     return r;
   }
 
-  Widget generateWeek(Iterable<DayData> daysOfWeek) {
+  Widget _buildWeek(Iterable<DayData> daysOfWeek) {
     return new Expanded(
       child: new Row(
         children: daysOfWeek
-            .map(
-              (day) => new Expanded(
-                    child: new DayWidget(
-                      dayData: day,
-                      onPressed: widget.onDayPressed,
-                    ),
+            .map((day) => new Expanded(
+                  child: new DayWidget(
+                    dayData: day,
+                    onPressed: widget.onDaySelected,
                   ),
-            )
+                ))
             .toList(),
       ),
     );

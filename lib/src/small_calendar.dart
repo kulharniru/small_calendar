@@ -167,7 +167,7 @@ class _SmallCalendarState extends State<SmallCalendar> {
 //    }
   }
 
-  void onPageChanged() {
+  void _onPageChanged() {
     int newPage = _pageController.page.toInt();
     if (_currentPage != newPage) {
       _currentPage = newPage;
@@ -198,35 +198,63 @@ class _SmallCalendarState extends State<SmallCalendar> {
   @override
   Widget build(BuildContext context) {
     return new Container(
-      child: new SmallCalendarStyle(
-        dayStyleData: widget.dayStyle,
-        weekdayIndicationStyleData: widget.weekdayIndicationStyle,
+      child: new MonthCalendarStyle(
+        firstWeekday: widget.firstWeekday,
+        showWeekdayIndication: widget.showWeekdayIndication,
+        weekdayIndicationDays: _weekdayIndicationDays,
+        dayNames: widget.dayNamesMap,
+        weekdayIndicationHeight: widget.weekdayIndicationHeight,
+        dayStyleData: widget.dayStyle ?? new DayStyleData(),
+        weekdayIndicationStyleData:
+            widget.weekdayIndicationStyle ?? new WeekdayIndicationStyleData(),
         child: new NotificationListener<ScrollNotification>(
           onNotification: (ScrollNotification value) {
             if (value is ScrollEndNotification) {
-              onPageChanged();
-              return true;
+              _onPageChanged();
             }
           },
           child: new PageView.builder(
-            itemBuilder: _monthCalendarBuilder,
             controller: _pageController,
+            itemBuilder: _monthCalendarBuilder,
           ),
         ),
       ),
     );
+//    return new Container(
+//      child: new MonthCalendarStyle(
+//        dayStyleData: widget.dayStyle,
+//        weekdayIndicationStyleData: widget.weekdayIndicationStyle,
+//        child: new NotificationListener<ScrollNotification>(
+//          onNotification: (ScrollNotification value) {
+//            if (value is ScrollEndNotification) {
+//              onPageChanged();
+//              return true;
+//            }
+//          },
+//          child: new PageView.builder(
+//            itemBuilder: _monthCalendarBuilder,
+//            controller: _pageController,
+//          ),
+//        ),
+//      ),
+//    );
   }
 
   Widget _monthCalendarBuilder(BuildContext context, int index) {
     return new MonthCalendar(
       month: _initialMonth.add(index - _initial_page),
-      firstWeekday: widget.firstWeekday,
       controller: widget.controller,
-      showWeekdayIndication: widget.showWeekdayIndication,
-      weekdayIndicationDays: _weekdayIndicationDays,
-      dayNames: widget.dayNamesMap,
-      weekdayIndicationHeight: widget.weekdayIndicationHeight,
-      onDayPressed: widget.onDaySelected,
+      onDaySelected: widget.onDaySelected,
     );
+//    return new MonthCalendar(
+//      month: _initialMonth.add(index - _initial_page),
+//      firstWeekday: widget.firstWeekday,
+//      controller: widget.controller,
+//      showWeekdayIndication: widget.showWeekdayIndication,
+//      weekdayIndicationDays: _weekdayIndicationDays,
+//      dayNames: widget.dayNamesMap,
+//      weekdayIndicationHeight: widget.weekdayIndicationHeight,
+//      onDayPressed: widget.onDaySelected,
+//    );
   }
 }
