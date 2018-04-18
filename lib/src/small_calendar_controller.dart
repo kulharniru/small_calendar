@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'package:meta/meta.dart';
 import 'dart:ui';
 
 import 'package:small_calendar/src/callbacks.dart';
 
 class SmallCalendarController {
+  /// Date to show when first creating the [SmallCalendar].
+  final DateTime initialDate;
+
   /// Future that returns true if specific date is today.
   final IsHasCallback isTodayCallback;
 
@@ -23,13 +27,41 @@ class SmallCalendarController {
 
   Set<VoidCallback> _dayRefreshListeners = new Set<VoidCallback>();
 
-  SmallCalendarController({
+  SmallCalendarController._internal({
+    @required this.initialDate,
     this.isTodayCallback,
     this.isSelectedCallback,
     this.hasTick1Callback,
     this.hasTick2Callback,
     this.hasTick3Callback,
-  });
+  }) : assert(initialDate != null);
+
+  factory SmallCalendarController({
+    DateTime initialDate,
+    IsHasCallback isTodayCallback,
+    IsHasCallback isSelectedCallback,
+    IsHasCallback hasTick1Callback,
+    IsHasCallback hasTick2Callback,
+    IsHasCallback hasTick3Callback,
+  }) {
+    initialDate ??= new DateTime.now();
+
+    // Extracts year, month and day from [initialDate]
+    DateTime initDate = new DateTime(
+      initialDate.year,
+      initialDate.month,
+      initialDate.day,
+    );
+
+    return new SmallCalendarController._internal(
+      initialDate: initDate,
+      isTodayCallback: isTodayCallback,
+      isSelectedCallback: isSelectedCallback,
+      hasTick1Callback: hasTick1Callback,
+      hasTick2Callback: hasTick2Callback,
+      hasTick3Callback: hasTick3Callback,
+    );
+  }
 
   // for listeners -------------------------------------------------------------
 

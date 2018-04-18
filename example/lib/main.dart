@@ -21,33 +21,26 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
   SmallCalendarController smallCalendarController =
       createSmallCalendarController();
 
-  DateTime initialDate;
-
   String displayedMonthText = "____";
-
-  Widget smallCalendar;
 
   @override
   void initState() {
     super.initState();
-
-    initialDate = new DateTime.now();
-    displayedMonthText = "Displaying ${initialDate.year}.${initialDate.month}";
   }
 
-  Widget createSmallCalendar(BuildContext context) {
+  Widget buildSmallCalendar(BuildContext context) {
     return new SmallCalendar(
       firstWeekday: DateTime.monday,
       controller: smallCalendarController,
-      initialDate: initialDate,
       dayStyle: new DayStyleData(
         showTicks: showTicks,
         tick3Color: Colors.yellow[700],
       ),
       showWeekdayIndication: showWeekdayIndication,
       weekdayIndicationStyle: new WeekdayIndicationStyleData(
-          backgroundColor: Theme.of(context).primaryColor),
-      onDayPressed: (DateTime date) {
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      onDaySelected: (DateTime date) {
         Scaffold.of(context).showSnackBar(new SnackBar(
               content: new Text(
                 "Pressed on ${date.year}.${date.month}.${date.day}",
@@ -65,10 +58,6 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (smallCalendar == null) {
-      smallCalendar = createSmallCalendar(context);
-    }
-
     return new MaterialApp(
       title: "small_calendar example",
       home: new Scaffold(
@@ -92,7 +81,7 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                         height: 250.0,
                         color: Theme.of(context).cardColor,
                         // Small Calendar ------------------------------------------
-                        child: smallCalendar,
+                        child: buildSmallCalendar(context),
                         // ---------------------------------------------------------
                       ),
                     ),
@@ -116,7 +105,6 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                               onChanged: (newValue) {
                                 setState(() {
                                   showWeekdayIndication = newValue;
-                                  smallCalendar = createSmallCalendar(context);
                                 });
                               },
                             ),
@@ -132,7 +120,6 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                                 onChanged: (newValue) {
                                   setState(() {
                                     showTicks = newValue;
-                                    smallCalendar = createSmallCalendar(context);
                                   });
                                 }),
                             new Text("Show Ticks"),
@@ -141,7 +128,7 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                         new RaisedButton(
                           child: new Text("Go to today"),
                           onPressed: () {
-                              smallCalendarController.goToToday();
+                            smallCalendarController.goToToday();
                           },
                         ),
                         new Container(
@@ -154,10 +141,10 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                           },
                         ),
                         new Divider(),
-new Container(
-  padding: new EdgeInsets.symmetric(horizontal: 16.0),
-  child:                         new Text(
-    """When you click on Refresh Button it might seem that nothing happened. But the calendar has actually refreshed, just that data is the same.
+                        new Container(
+                          padding: new EdgeInsets.symmetric(horizontal: 16.0),
+                          child: new Text(
+                            """When you click on Refresh Button it might seem that nothing happened. But the calendar has actually refreshed, just that data is the same.
 
 For example purpuses:
                     * every first day of month has tick1
@@ -167,8 +154,8 @@ For example purpuses:
                     * every fifth day of month has tick1, tick2 and tick3
                     * every tenth day of month is selected
                     """,
-  ),
-),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -183,6 +170,14 @@ For example purpuses:
 }
 
 SmallCalendarController createSmallCalendarController() {
+  Future<bool> isSelectedCallback(DateTime day) async {
+    if (day.day == 10) {
+      return true;
+    }
+
+    return false;
+  }
+
   Future<bool> hasTick1Callback(DateTime day) async {
     if (day.day == 1 || day.day == 4 || day.day == 5) {
       return true;
@@ -208,13 +203,7 @@ SmallCalendarController createSmallCalendarController() {
   }
 
   return new SmallCalendarController(
-    isSelectedCallback: (DateTime day) async {
-      if (day.day == 10) {
-        return true;
-      }
-
-      return false;
-    },
+    isSelectedCallback: isSelectedCallback,
     hasTick1Callback: hasTick1Callback,
     hasTick2Callback: hasTick2Callback,
     hasTick3Callback: hasTick3Callback,

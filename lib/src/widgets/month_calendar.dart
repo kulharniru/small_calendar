@@ -34,10 +34,15 @@ class MonthCalendar extends StatefulWidget {
     @required this.dayNames,
     @required this.weekdayIndicationHeight,
     @required this.onDayPressed,
-  }) : super(key: new ObjectKey(month));
+  }) : assert(month != null),
+  assert(firstWeekday != null),
+  assert(controller != null),
+  assert(showWeekdayIndication != null),
+  assert(weekdayIndicationDays != null),
+  assert(dayNames != null);
 
   @override
-  State createState() => new _MonthCalendarState();
+  _MonthCalendarState createState() => new _MonthCalendarState();
 }
 
 class _MonthCalendarState extends State<MonthCalendar> {
