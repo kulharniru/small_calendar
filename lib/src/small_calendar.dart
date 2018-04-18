@@ -115,7 +115,7 @@ class _SmallCalendarState extends State<SmallCalendar> {
     _initInitialMonth();
     initWeekdayIndicationDays();
 
-    widget.controller.addGoToDateListener(onGoToDate);
+    widget.controller.attachGoToListener(onGoToDate);
   }
 
   void _initPageController() {
@@ -135,7 +135,7 @@ class _SmallCalendarState extends State<SmallCalendar> {
 
   @override
   void dispose() {
-    widget.controller.removeGoToDateListener(onGoToDate);
+    widget.controller.detachGoToDateListener(onGoToDate);
 
     super.dispose();
   }
@@ -143,11 +143,11 @@ class _SmallCalendarState extends State<SmallCalendar> {
   @override
   void didUpdateWidget(SmallCalendar oldWidget) {
     super.didUpdateWidget(oldWidget);
-//
-//    if (oldWidget.controller != widget.controller) {
-//      oldWidget.controller.removeGoToDateListener(onGoToDate);
-//      widget.controller.addGoToDateListener(onGoToDate);
-//    }
+
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.detachGoToDateListener(onGoToDate);
+      widget.controller.attachGoToListener(onGoToDate);
+    }
 //
 //    bool shouldRefresh = false;
 //    if (oldWidget.firstWeekday != widget.firstWeekday) {
@@ -220,24 +220,6 @@ class _SmallCalendarState extends State<SmallCalendar> {
         ),
       ),
     );
-//    return new Container(
-//      child: new MonthCalendarStyle(
-//        dayStyleData: widget.dayStyle,
-//        weekdayIndicationStyleData: widget.weekdayIndicationStyle,
-//        child: new NotificationListener<ScrollNotification>(
-//          onNotification: (ScrollNotification value) {
-//            if (value is ScrollEndNotification) {
-//              onPageChanged();
-//              return true;
-//            }
-//          },
-//          child: new PageView.builder(
-//            itemBuilder: _monthCalendarBuilder,
-//            controller: _pageController,
-//          ),
-//        ),
-//      ),
-//    );
   }
 
   Widget _monthCalendarBuilder(BuildContext context, int index) {
@@ -246,15 +228,5 @@ class _SmallCalendarState extends State<SmallCalendar> {
       controller: widget.controller,
       onDaySelected: widget.onDaySelected,
     );
-//    return new MonthCalendar(
-//      month: _initialMonth.add(index - _initial_page),
-//      firstWeekday: widget.firstWeekday,
-//      controller: widget.controller,
-//      showWeekdayIndication: widget.showWeekdayIndication,
-//      weekdayIndicationDays: _weekdayIndicationDays,
-//      dayNames: widget.dayNamesMap,
-//      weekdayIndicationHeight: widget.weekdayIndicationHeight,
-//      onDayPressed: widget.onDaySelected,
-//    );
   }
 }

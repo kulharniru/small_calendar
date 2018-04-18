@@ -65,15 +65,15 @@ class SmallCalendarController {
 
   // for listeners -------------------------------------------------------------
 
-  void addGoToDateListener(DateTimeCallback listener) {
+  void attachGoToListener(DateTimeCallback listener) {
     _goToListeners.add(listener);
   }
 
-  void removeGoToDateListener(DateTimeCallback listener) {
+  void detachGoToDateListener(DateTimeCallback listener) {
     _goToListeners.remove(listener);
   }
 
-  void _notifyGoToDateListeners(DateTime dateToGoTo) {
+  void _notifyGoToListeners(DateTime dateToGoTo) {
     for (DateTimeCallback listener in _goToListeners) {
       if (listener != null) {
         listener(dateToGoTo);
@@ -81,15 +81,15 @@ class SmallCalendarController {
     }
   }
 
-  void addDayRefreshListener(VoidCallback listener) {
+  void attachRefreshListener(VoidCallback listener) {
     _dayRefreshListeners.add(listener);
   }
 
-  void removeDayRefreshListener(VoidCallback listener) {
+  void detachRefreshListener(VoidCallback listener) {
     _dayRefreshListeners.remove(listener);
   }
 
-  void _notifyDayRefreshListeners() {
+  void _notifyRefreshListeners() {
     for (VoidCallback listener in _dayRefreshListeners) {
       if (listener != null) {
         listener();
@@ -153,7 +153,7 @@ class SmallCalendarController {
   ///
   /// If month with specific [date] cannot be displayed, it shows the nearest month.
   void goToDate(DateTime date) {
-    _notifyGoToDateListeners(date);
+    _notifyGoToListeners(date);
   }
 
   /// [SmallCalendar] displays month that shows today's date.
@@ -167,6 +167,6 @@ class SmallCalendarController {
 
   /// Notifies all day widgets to refresh their data.
   void refreshDayInformation() {
-    _notifyDayRefreshListeners();
+    _notifyRefreshListeners();
   }
 }

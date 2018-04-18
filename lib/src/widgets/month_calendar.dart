@@ -38,13 +38,13 @@ class _MonthCalendarState extends State<MonthCalendar> {
     super.initState();
 
     _isActive = true;
-    widget.controller.addDayRefreshListener(onRefreshDays);
+    widget.controller.attachRefreshListener(onRefreshDays);
   }
 
   @override
   void dispose() {
     _isActive = false;
-    widget.controller.removeDayRefreshListener(onRefreshDays);
+    widget.controller.detachRefreshListener(onRefreshDays);
 
     super.dispose();
   }
@@ -54,8 +54,10 @@ class _MonthCalendarState extends State<MonthCalendar> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeDayRefreshListener(onRefreshDays);
-      widget.controller.addDayRefreshListener(onRefreshDays);
+      oldWidget.controller.detachRefreshListener(onRefreshDays);
+      widget.controller.attachRefreshListener(onRefreshDays);
+
+      _refreshDaysData();
     }
   }
 

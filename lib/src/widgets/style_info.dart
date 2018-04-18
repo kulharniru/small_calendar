@@ -46,9 +46,6 @@ class StyleInfo extends InheritedWidget {
           oldWidget.weekdayIndicationHeight != weekdayIndicationHeight ||
           oldWidget.dayStyleData != dayStyleData ||
           oldWidget.weekdayIndicationStyleData != weekdayIndicationStyleData;
-
-//      return oldWidget.dayStyleData != dayStyleData ||
-//          oldWidget.weekdayIndicationStyleData != weekdayIndicationStyleData;
     } else {
       return true;
     }
