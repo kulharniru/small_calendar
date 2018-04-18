@@ -198,7 +198,7 @@ class _SmallCalendarState extends State<SmallCalendar> {
   @override
   Widget build(BuildContext context) {
     return new Container(
-      child: new MonthCalendarStyle(
+      child: new StyleInfo(
         firstWeekday: widget.firstWeekday,
         showWeekdayIndication: widget.showWeekdayIndication,
         weekdayIndicationDays: _weekdayIndicationDays,

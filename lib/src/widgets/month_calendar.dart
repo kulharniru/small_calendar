@@ -7,7 +7,7 @@ import '../data/all.dart';
 import '../small_calendar_controller.dart';
 import '../callbacks.dart';
 import '../generator.dart';
-import 'month_calendar_style.dart';
+import 'style_info.dart';
 import 'weekday_indicator.dart';
 import 'day_widget.dart';
 
@@ -97,7 +97,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    MonthCalendarStyle styleInfo = MonthCalendarStyle.of(context);
+    StyleInfo styleInfo = StyleInfo.of(context);
 
     if (_days == null) {
       _initDays(styleInfo.firstWeekday);
@@ -125,7 +125,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
 
   Widget _buildWeekdayIndication(
     BuildContext context,
-    MonthCalendarStyle styleInfo,
+    StyleInfo styleInfo,
   ) {
     return new Container(
       height: styleInfo.weekdayIndicationHeight,

@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:small_calendar/src/callbacks.dart';
 
 import '../data/all.dart';
-import 'month_calendar_style.dart';
+import 'style_info.dart';
 
 class DayWidget extends StatelessWidget {
   final DayData dayData;
@@ -19,7 +19,7 @@ class DayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool showTicks = MonthCalendarStyle.of(context).dayStyleData.showTicks;
+    bool showTicks = StyleInfo.of(context).dayStyleData.showTicks;
 
     VoidCallback onTap;
     if (onPressed != null) {
@@ -43,7 +43,7 @@ class DayWidget extends StatelessWidget {
       mainColumnItems.add(
         new Container(
           height:
-              MonthCalendarStyle.of(context).dayStyleData.textTickSeparation,
+              StyleInfo.of(context).dayStyleData.textTickSeparation,
         ),
       );
     }
@@ -59,7 +59,7 @@ class DayWidget extends StatelessWidget {
     }
 
     return new Container(
-      margin: MonthCalendarStyle.of(context).dayStyleData.margin,
+      margin: StyleInfo.of(context).dayStyleData.margin,
       child: new Material(
         color: Colors.transparent,
         child: new InkWell(
@@ -77,10 +77,10 @@ class DayWidget extends StatelessWidget {
   Widget createDayNum(BuildContext context) {
     Color circleColor = Colors.transparent;
     if (dayData.isToday) {
-      circleColor = MonthCalendarStyle.of(context).dayStyleData.todayColor;
+      circleColor = StyleInfo.of(context).dayStyleData.todayColor;
     }
     if (dayData.isSelected) {
-      circleColor = MonthCalendarStyle.of(context).dayStyleData.selectedColor;
+      circleColor = StyleInfo.of(context).dayStyleData.selectedColor;
     }
 
     return new Container(
@@ -93,11 +93,11 @@ class DayWidget extends StatelessWidget {
           child: new Text(
             "${dayData.day.day}",
             style: dayData.day.isExtended
-                ? MonthCalendarStyle
+                ? StyleInfo
                     .of(context)
                     .dayStyleData
                     .extendedDayTextStyle
-                : MonthCalendarStyle.of(context).dayStyleData.dayTextStyle,
+                : StyleInfo.of(context).dayStyleData.dayTextStyle,
           ),
         ),
       ),
@@ -111,7 +111,7 @@ class DayWidget extends StatelessWidget {
     if (dayData.hasTick1) {
       ticks.add(
         createTick(
-          color: MonthCalendarStyle.of(context).dayStyleData.tick1Color,
+          color: StyleInfo.of(context).dayStyleData.tick1Color,
         ),
       );
     }
@@ -120,7 +120,7 @@ class DayWidget extends StatelessWidget {
     if (dayData.hasTick2) {
       ticks.add(
         createTick(
-          color: MonthCalendarStyle.of(context).dayStyleData.tick2Color,
+          color: StyleInfo.of(context).dayStyleData.tick2Color,
         ),
       );
     }
@@ -129,7 +129,7 @@ class DayWidget extends StatelessWidget {
     if (dayData.hasTick3) {
       ticks.add(
         createTick(
-          color: MonthCalendarStyle.of(context).dayStyleData.tick3Color,
+          color: StyleInfo.of(context).dayStyleData.tick3Color,
         ),
       );
     }

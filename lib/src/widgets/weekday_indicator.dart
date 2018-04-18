@@ -17,7 +17,7 @@ class WeekdayIndicator extends StatelessWidget {
         child: new ClipRect(
           child: new Text(
             text,
-            style: MonthCalendarStyle
+            style: StyleInfo
                 .of(context)
                 .weekdayIndicationStyleData
                 .textStyle,

@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 import 'package:small_calendar/src/style_data/all.dart';
 
-class MonthCalendarStyle extends InheritedWidget {
+class StyleInfo extends InheritedWidget {
   final int firstWeekday;
 
   final bool showWeekdayIndication;
@@ -14,7 +14,7 @@ class MonthCalendarStyle extends InheritedWidget {
   final DayStyleData dayStyleData;
   final WeekdayIndicationStyleData weekdayIndicationStyleData;
 
-  MonthCalendarStyle({
+  StyleInfo({
     @required this.firstWeekday,
     @required this.showWeekdayIndication,
     @required this.weekdayIndicationDays,
@@ -32,13 +32,13 @@ class MonthCalendarStyle extends InheritedWidget {
         assert(weekdayIndicationStyleData != null),
         super(child: child);
 
-  static MonthCalendarStyle of(BuildContext context) {
-    return context.inheritFromWidgetOfExactType(MonthCalendarStyle);
+  static StyleInfo of(BuildContext context) {
+    return context.inheritFromWidgetOfExactType(StyleInfo);
   }
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) {
-    if (oldWidget is MonthCalendarStyle) {
+    if (oldWidget is StyleInfo) {
       return oldWidget.firstWeekday != firstWeekday ||
           oldWidget.showWeekdayIndication != showWeekdayIndication ||
           oldWidget.weekdayIndicationDays != weekdayIndicationDays ||
