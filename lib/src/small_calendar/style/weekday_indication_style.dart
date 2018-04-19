@@ -2,35 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class WeekdayIndicationStyleData {
-  /// [TextStyle] of weekday indication widget.
+class WeekdayIndicationStyle {
+  WeekdayIndicationStyle.raw({
+    @required this.weekdayIndicationHeight,
+    @required this.textStyle,
+    @required this.backgroundColor,
+  })  : assert(weekdayIndicationHeight != null),
+        assert(textStyle != null),
+        assert(backgroundColor != null);
+
+  factory WeekdayIndicationStyle({
+    double weekdayIndicationHeight = 25.0,
+    TextStyle textStyle,
+    Color backgroundColor = Colors.blue,
+  }) {
+    return new WeekdayIndicationStyle.raw(
+      weekdayIndicationHeight: weekdayIndicationHeight,
+      textStyle: textStyle ?? new TextStyle(),
+      backgroundColor: backgroundColor,
+    );
+  }
+
+  /// Height of weekday indication area
+  final double weekdayIndicationHeight;
+
+  /// [TextStyle] of weekday indication widgets.
   final TextStyle textStyle;
 
   /// Background [Color] of weekday indication area.
   final Color backgroundColor;
 
-  WeekdayIndicationStyleData.raw({
-    @required this.textStyle,
-    @required this.backgroundColor,
-  })
-      : assert(textStyle != null),
-        assert(backgroundColor != null);
-
-  factory WeekdayIndicationStyleData({
+  WeekdayIndicationStyle copyWith({
+    double weekdayIndicationHeight,
     TextStyle textStyle,
     Color backgroundColor,
   }) {
-    return new WeekdayIndicationStyleData.raw(
-      textStyle: textStyle ?? new TextStyle(),
-      backgroundColor: backgroundColor ?? Colors.transparent,
-    );
-  }
-
-  WeekdayIndicationStyleData copyWith({
-    TextStyle textStyle,
-    Color backgroundColor,
-  }) {
-    return new WeekdayIndicationStyleData.raw(
+    return new WeekdayIndicationStyle.raw(
+      weekdayIndicationHeight:
+          weekdayIndicationHeight ?? this.weekdayIndicationHeight,
       textStyle: textStyle ?? this.textStyle,
       backgroundColor: backgroundColor ?? this.backgroundColor,
     );

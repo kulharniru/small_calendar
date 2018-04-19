@@ -1,2 +1,2 @@
-export 'day_styledata.dart';
-export 'weekday_indication_styledata.dart';
+export 'day_style.dart';
+export 'weekday_indication_style.dart';
