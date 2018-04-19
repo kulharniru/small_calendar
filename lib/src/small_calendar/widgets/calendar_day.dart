@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import 'package:small_calendar/src/callbacks.dart';
+import 'package:small_calendar/src/data/all.dart';
+import '../style/day_style.dart';
 
-import '../data/all.dart';
-import 'style_info.dart';
-
-class DayWidget extends StatelessWidget {
+class CalendarDay extends StatelessWidget {
   final DayData dayData;
+  final DayStyle style;
   final DateTimeCallback onPressed;
 
-  DayWidget({
+  CalendarDay({
+    @required this.style,
     @required this.dayData,
     @required this.onPressed,
-  })  : assert(dayData != null),
+  })  : assert(style != null),
+        assert(dayData != null),
         assert(onPressed != null),
         super(key: new ObjectKey(dayData.day));
 
   @override
   Widget build(BuildContext context) {
-    bool showTicks = StyleInfo.of(context).dayStyleData.showTicks;
-
     VoidCallback onTap;
     if (onPressed != null) {
       onTap = () {
@@ -34,32 +34,27 @@ class DayWidget extends StatelessWidget {
     mainColumnItems.add(
       new Expanded(
         flex: 3,
-        child: createDayNum(context),
+        child: _buildDayNumber(context),
       ),
     );
 
-    // text-tick separation
-    if (showTicks) {
-      mainColumnItems.add(
-        new Container(
-          height:
-              StyleInfo.of(context).dayStyleData.textTickSeparation,
-        ),
-      );
-    }
-
     // ticks
-    if (showTicks) {
+    if (style.showTicks) {
+      // text-tick separation
+      mainColumnItems.add(
+        new Container(height: style.textTickSeparation),
+      );
       mainColumnItems.add(
         new Expanded(
           flex: 1,
-          child: createTicks(context),
+          child: _buildTicks(context),
         ),
       );
+      // ticks
     }
 
     return new Container(
-      margin: StyleInfo.of(context).dayStyleData.margin,
+      margin: style.margin,
       child: new Material(
         color: Colors.transparent,
         child: new InkWell(
@@ -74,13 +69,13 @@ class DayWidget extends StatelessWidget {
     );
   }
 
-  Widget createDayNum(BuildContext context) {
+  Widget _buildDayNumber(BuildContext context) {
     Color circleColor = Colors.transparent;
     if (dayData.isToday) {
-      circleColor = StyleInfo.of(context).dayStyleData.todayColor;
+      circleColor = style.todayColor;
     }
     if (dayData.isSelected) {
-      circleColor = StyleInfo.of(context).dayStyleData.selectedColor;
+      circleColor = style.selectedColor;
     }
 
     return new Container(
@@ -93,25 +88,22 @@ class DayWidget extends StatelessWidget {
           child: new Text(
             "${dayData.day.day}",
             style: dayData.day.isExtended
-                ? StyleInfo
-                    .of(context)
-                    .dayStyleData
-                    .extendedDayTextStyle
-                : StyleInfo.of(context).dayStyleData.dayTextStyle,
+                ? style.extendedDayTextStyle
+                : style.dayTextStyle,
           ),
         ),
       ),
     );
   }
 
-  Widget createTicks(BuildContext context) {
+  Widget _buildTicks(BuildContext context) {
     List<Widget> ticks = <Widget>[];
 
     // tick1
     if (dayData.hasTick1) {
       ticks.add(
-        createTick(
-          color: StyleInfo.of(context).dayStyleData.tick1Color,
+        _buildTick(
+          color: style.tick1Color,
         ),
       );
     }
@@ -119,8 +111,8 @@ class DayWidget extends StatelessWidget {
     // tick2
     if (dayData.hasTick2) {
       ticks.add(
-        createTick(
-          color: StyleInfo.of(context).dayStyleData.tick2Color,
+        _buildTick(
+          color: style.tick2Color,
         ),
       );
     }
@@ -128,8 +120,8 @@ class DayWidget extends StatelessWidget {
     // tick3
     if (dayData.hasTick3) {
       ticks.add(
-        createTick(
-          color: StyleInfo.of(context).dayStyleData.tick3Color,
+        _buildTick(
+          color: style.tick3Color,
         ),
       );
     }
@@ -142,7 +134,7 @@ class DayWidget extends StatelessWidget {
     );
   }
 
-  Widget createTick({@required Color color}) {
+  Widget _buildTick({@required Color color}) {
     return new Expanded(
       child: new Container(
         decoration: new BoxDecoration(
