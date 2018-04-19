@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:small_calendar/src/data/all.dart';
 
 import 'pager_position.dart';
+import 'small_calendar_pager.dart';
 
 typedef void JumpToMonthListener(Month month);
 
@@ -11,20 +12,34 @@ class SmallCalendarPagerController {
   static const _default_initial_page = 100000;
   static const _default_numOf_pages_after_initial_page = 100000;
 
+  /// Creates a new instance of [SmallCalendarPagerController].
+  ///
+  /// It converts all [DateTime]s to their internal representation ([Month]), and checks their validity.
   SmallCalendarPagerController._internal({
-    @required this.initialMonth,
-    this.minimumMonth,
-    this.maximumMonth,
-  })  : assert(initialMonth != null),
-        assert((minimumMonth != null)
-            ? (minimumMonth.isBefore(initialMonth) ||
-                minimumMonth == initialMonth)
+    @required DateTime initialMonth,
+    DateTime minimumMonth,
+    DateTime maximumMonth,
+  })  : // Converts DateTime-s to Month-s
+        _initMonth = new Month.fromDateTime(initialMonth),
+        _minMonth = (minimumMonth != null)
+            ? new Month.fromDateTime(minimumMonth)
+            : null,
+        _maxMonth = (maximumMonth != null)
+            ? new Month.fromDateTime(maximumMonth)
+            : null,
+        // asserts
+        assert(_initMonth != null),
+        assert((_minMonth != null)
+            ? (_minMonth.isBefore(_initMonth) || _maxMonth == _initMonth)
             : true),
-        assert((maximumMonth != null)
-            ? (maximumMonth.isAfter(initialMonth) ||
-                maximumMonth == initialMonth)
+        assert((_maxMonth != null)
+            ? (_maxMonth.isAfter(_initMonth) || _maxMonth == _initMonth)
             : true);
 
+  /// Creates a new instance of [SmallCalendarPagerController].
+  ///
+  /// If [initialMonth] is null, initial month will be the current month.
+  /// [minimumMonth] and [maximumMonth] are inclusive.
   factory SmallCalendarPagerController({
     DateTime initialMonth,
     DateTime minimumMonth,
@@ -32,97 +47,139 @@ class SmallCalendarPagerController {
   }) {
     initialMonth ??= new DateTime.now();
 
-    Month initMonth;
-    Month minMonth;
-    Month maxMonth;
-
-    // converts DateTime-s to Month-s
-    initMonth = new Month.fromDateTime(initialMonth);
-    if (minimumMonth != null) {
-      minMonth = new Month.fromDateTime(minimumMonth);
-    }
-    if (maximumMonth != null) {
-      maxMonth = new Month.fromDateTime(maximumMonth);
-    }
-
     return new SmallCalendarPagerController._internal(
-      initialMonth: initMonth,
-      minimumMonth: minMonth,
-      maximumMonth: maxMonth,
+      initialMonth: initialMonth,
+      minimumMonth: minimumMonth,
+      maximumMonth: maximumMonth,
     );
   }
 
-  /// [Month] to show when first creating the [SmallCalendarPager].
-  final Month initialMonth;
+  /// [PagerPosition] provided by [SmallCalendarPager] for controlling that pager.
+  PagerPosition _pagerPosition;
 
-  final Month minimumMonth;
+  /// Internal representation of [initialMonth].
+  final Month _initMonth;
 
-  final Month maximumMonth;
+  /// Internal representation of [minimumMonth].
+  final Month _minMonth;
 
-  PagerPosition _listener;
+  /// Internal representation of [maximumMonth].
+  final Month _maxMonth;
 
+  /// Month that is displayed when the controlled [SmallCalendarPager] if first created.
+  DateTime get initialMonth => _initMonth.toDateTime();
+
+  /// Minimum month that the controlled [SmallCalendarPager] will be able to display (inclusive).
+  ///
+  /// If minimum month is null the [SmallCalendarPager] will be practically infinite (in months before initial month).
+  DateTime get minimumMonth {
+    if (_minMonth != null) {
+      return _minMonth.toDateTime();
+    }
+    return null;
+  }
+
+  /// Maximum month that the controlled [SmallCalendarPager] will be able to display (inclusive).
+  ///
+  /// If maximum month is null the [SmallCalendarPager] will be practically infinite (in months after initial month).
+  DateTime get maximumMonth {
+    if (_maxMonth != null) {
+      return _maxMonth.toDateTime();
+    }
+    return null;
+  }
+
+  /// The current displayed month in the controller [SmallCalendarPager].
   DateTime get displayedMonth {
-    if (_listener == null) {
-      return initialMonth.toDateTime();
+    if (_pagerPosition == null) {
+      return initialMonth;
     } else {
-      return monthOf(_listener.getPage());
+      return monthOf(_pagerPosition.getPage());
     }
   }
 
   /// Changes which month is displayed in the controlled [SmallCalendarPager].
-  void jumpTo(DateTime month) {
-    _listener.jumpToPage(
+  ///
+  /// If [month] is outside bounds of the controller the highest/lowest month is displayed.
+  void jumpToMonth(DateTime month) {
+    _pagerPosition.jumpToPage(
       pageOf(month),
     );
   }
 
-  void attach(PagerPosition listener) {
-    _listener = listener;
+  /// Animates the controlled [SmallCalendarPager] to the given [month].
+  ///
+  /// If [month] is outside bounds of the controller the highest/lowest month is animated to.
+  void animateToMonth(
+    DateTime month, {
+    @required Duration duration,
+    @required Curve curve,
+  }) {
+    assert(duration != null);
+    assert(curve != null);
+
+    _pagerPosition.animateToPage(
+      pageOf(month),
+      duration,
+      curve,
+    );
   }
 
+  /// Registers the given [pagerPosition] with the controller.
+  ///
+  /// If a previous [pagerPosition] is registered, it is replaced with te new one.
+  void attach(PagerPosition pagerPosition) {
+    _pagerPosition = pagerPosition;
+  }
+
+  /// Unregisters the previously attached item.
   void detach() {
-    _listener = null;
+    _pagerPosition = null;
   }
 
+  /// Index of the initial page that the controlled [SmallCalendarPager] should display.
   int get initialPage {
     if (minimumMonth == null) {
       return _default_initial_page;
     } else {
-      return Month.getDifference(minimumMonth, initialMonth);
+      return Month.getDifference(_minMonth, _initMonth);
     }
   }
 
+  /// Number of pages that the controlled [SmallCalendarPager] should be able to display.
   int get numOfPages {
     int r = initialPage + 1;
-    if (maximumMonth == null) {
+    if (_maxMonth == null) {
       r += _default_numOf_pages_after_initial_page;
     } else {
-      r += Month.getDifference(initialMonth, maximumMonth);
+      r += Month.getDifference(_initMonth, _maxMonth);
     }
 
     return r;
   }
 
+  /// Returns a month that is displayed on the [page] (page index) of controlled [SmallCalendarPager].
   DateTime monthOf(int page) {
     if (minimumMonth == null) {
       int distanceFromInitialPage = page - initialPage;
 
-      return initialMonth.add(distanceFromInitialPage).toDateTime();
+      return _initMonth.add(distanceFromInitialPage).toDateTime();
     } else {
-      return minimumMonth.add(page).toDateTime();
+      return _minMonth.add(page).toDateTime();
     }
   }
 
+  /// Returns index of the page that represents a specified [month] in the controlled [SmallCalendarPager].
   int pageOf(DateTime month) {
     int r;
 
     Month m = new Month.fromDateTime(month);
-    if (m == initialMonth) {
+    if (m == _initMonth) {
       r = initialPage;
     } else if (minimumMonth == null) {
-      r = initialPage + Month.getDifference(initialMonth, m);
+      r = initialPage + Month.getDifference(_initMonth, m);
     } else {
-      r = Month.getDifference(minimumMonth, m);
+      r = Month.getDifference(_minMonth, m);
     }
 
     if (r < 0) {

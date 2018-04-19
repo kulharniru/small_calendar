@@ -15,16 +15,26 @@ class SmallCalendarPagerExample extends StatefulWidget {
 }
 
 class _SmallCalendarPagerExampleState extends State<SmallCalendarPagerExample> {
-  SmallCalendarPagerController controller;
+  SmallCalendarPagerController smallCalendarPagerController;
+
+  String displayedMonthText;
 
   @override
   void initState() {
     super.initState();
 
-    controller = new SmallCalendarPagerController(
-      initialMonth: new DateTime(2018, 4),
-      minimumMonth: new DateTime(2018, 2),
-      maximumMonth: new DateTime(2018, 6),
+    DateTime initialMonth = new DateTime.now();
+    DateTime minimumMonth =
+        new DateTime(initialMonth.year - 1, initialMonth.month);
+    DateTime maximumMonth =
+        new DateTime(initialMonth.year + 1, initialMonth.month);
+
+    displayedMonthText = "${initialMonth.year}.${initialMonth.month}";
+
+    smallCalendarPagerController = new SmallCalendarPagerController(
+      initialMonth: initialMonth,
+      minimumMonth: minimumMonth,
+      maximumMonth: maximumMonth,
     );
   }
 
@@ -44,13 +54,17 @@ class _SmallCalendarPagerExampleState extends State<SmallCalendarPagerExample> {
               children: <Widget>[
                 new Container(
                   color: Colors.white,
-                  margin: new EdgeInsets.symmetric(vertical: 50.0),
+                  margin: new EdgeInsets.only(top: 50.0),
                   width: 300.0,
                   height: 300.0,
                   child: new SmallCalendarPager(
-                    controller: new SmallCalendarPagerController(maximumMonth: new DateTime(2018,4)),
-//controller: new SmallCalendarPagerController(maximumMonth: new DateTime(2018,5)),
-//              controller: controller,
+                    controller: smallCalendarPagerController,
+                    onMonthChanged: (DateTime displayedMonth) {
+                      setState(() {
+                        displayedMonthText =
+                            "${displayedMonth.year}.${displayedMonth.month}";
+                      });
+                    },
                     pageBuilder: (BuildContext context, DateTime month) {
                       return new Center(
                         child: new Text(
@@ -63,16 +77,23 @@ class _SmallCalendarPagerExampleState extends State<SmallCalendarPagerExample> {
                 new Expanded(
                     child: new Container(
                   margin: new EdgeInsets.symmetric(horizontal: 40.0),
-                  child: new PageView(
-                    controller: new PageController(initialPage: 1),
-                    children: <Widget>[
-                      new Text("a"),
-                      new Text("b"),
-                      new Text("c"),
-                      new Text("d"),
-                      new Text("e"),
-                      new Text("f")
-                    ],
+                  child: new SingleChildScrollView(
+                    child: new Column(
+                      children: <Widget>[
+                        new Container(
+                          margin: new EdgeInsets.symmetric(vertical: 8.0),
+                          child: new Text(displayedMonthText),
+                        ),
+                        new RaisedButton(
+                          child: new Text("Jump to initial Month"),
+                          onPressed: () {
+                            smallCalendarPagerController.jumpToMonth(
+                              smallCalendarPagerController.initialMonth,
+                            );
+                          },
+                        )
+                      ],
+                    ),
                   ),
                 )),
               ],

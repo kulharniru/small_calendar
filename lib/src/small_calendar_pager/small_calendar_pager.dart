@@ -3,10 +3,15 @@ import 'package:meta/meta.dart';
 
 import 'pager_position.dart';
 import 'small_calendar_pager_controller.dart';
-import 'typedefs.dart';
+
+/// Signature for a function that creates a widget for a given [month].
+///
+/// Values of [month] except year and month will be set to their default values.
+typedef Widget SmallCalendarPageBuilder(BuildContext context, DateTime month);
 
 class SmallCalendarPager extends StatefulWidget {
   SmallCalendarPager._internal({
+    @required this.scrollDirection,
     @required this.controller,
     @required this.pageBuilder,
     this.onMonthChanged,
@@ -14,6 +19,7 @@ class SmallCalendarPager extends StatefulWidget {
         assert(pageBuilder != null);
 
   factory SmallCalendarPager({
+    Axis scrollDirection = Axis.horizontal,
     SmallCalendarPagerController controller,
     @required SmallCalendarPageBuilder pageBuilder,
     ValueChanged<DateTime> onMonthChanged,
@@ -21,15 +27,20 @@ class SmallCalendarPager extends StatefulWidget {
     controller ??= new SmallCalendarPagerController();
 
     return new SmallCalendarPager._internal(
+      scrollDirection: scrollDirection,
       controller: controller,
       pageBuilder: pageBuilder,
+      onMonthChanged: onMonthChanged,
     );
   }
+
+  /// The axis along which the pager scrolls.
+  final Axis scrollDirection;
 
   /// An object that can be used to control the month displayed in the pager.
   final SmallCalendarPagerController controller;
 
-  /// Function that builds the small calendar widget.
+  /// Function that builds the widgets displayed inside the pager.
   final SmallCalendarPageBuilder pageBuilder;
 
   /// Called whenever the displayed month changes.
@@ -40,8 +51,13 @@ class SmallCalendarPager extends StatefulWidget {
 }
 
 class _SmallCalendarPagerState extends State<SmallCalendarPager> {
+  /// This widget is basically a wrapper around this [PageView].
+  PageView _pageView;
+
+  /// Controller for the internally user [PageView].
   PageController _pageController;
 
+  /// Currently displayed page in the internal [PageView].
   int _displayedPage;
 
   @override
@@ -49,6 +65,7 @@ class _SmallCalendarPagerState extends State<SmallCalendarPager> {
     super.initState();
 
     _pageController = _createPageController();
+    _pageView = _createPageView();
     widget.controller.attach(_createPagerPosition());
   }
 
@@ -56,15 +73,36 @@ class _SmallCalendarPagerState extends State<SmallCalendarPager> {
   void didUpdateWidget(SmallCalendarPager oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.controller != widget.controller) {
+    if (oldWidget.controller != widget.controller ||
+        oldWidget.scrollDirection != widget.scrollDirection) {
+      _pageController = _createPageController();
+      _pageView = _createPageView();
+
       oldWidget.controller.detach();
       widget.controller.attach(_createPagerPosition());
+
+      setState(() {});
     }
   }
 
   PageController _createPageController() {
+    _displayedPage = widget.controller.initialPage;
+
     return new PageController(
-      initialPage: widget.controller.initialPage,
+      initialPage: _displayedPage,
+    );
+  }
+
+  PageView _createPageView() {
+    return new PageView.builder(
+      scrollDirection: widget.scrollDirection,
+      controller: _pageController,
+      itemCount: widget.controller.numOfPages,
+      itemBuilder: (BuildContext context, int index) {
+        DateTime month = widget.controller.monthOf(index);
+
+        return widget.pageBuilder(context, month);
+      },
     );
   }
 
@@ -73,12 +111,21 @@ class _SmallCalendarPagerState extends State<SmallCalendarPager> {
       _pageController.jumpToPage(index);
     }
 
+    void onAnimateToPage(int page, Duration duration, Curve curve) {
+      _pageController.animateToPage(
+        page,
+        duration: duration,
+        curve: curve,
+      );
+    }
+
     int onGetPage() {
       return _displayedPage;
     }
 
     return new PagerPosition(
       jumpToPage: onJumpToPage,
+      animateToPage: onAnimateToPage,
       getPage: onGetPage,
     );
   }
@@ -104,15 +151,7 @@ class _SmallCalendarPagerState extends State<SmallCalendarPager> {
           _onScrollEnded();
         }
       },
-      child: new PageView.builder(
-        controller: _pageController,
-        itemCount: widget.controller.numOfPages,
-        itemBuilder: (BuildContext context, int index) {
-          DateTime month = widget.controller.monthOf(index);
-
-          return widget.pageBuilder(context, month);
-        },
-      ),
+      child: _pageView,
     );
   }
 }
