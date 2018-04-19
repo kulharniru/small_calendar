@@ -8,8 +8,7 @@ class Month {
   Month(
     this.year,
     this.month,
-  )
-      : assert(year != null),
+  )   : assert(year != null),
         assert(month != null),
         assert(month >= 1 && month <= 12);
 
@@ -68,12 +67,20 @@ class Month {
     if (year < other.year) {
       return true;
     }
-
     if (year > other.year) {
       return false;
     }
-
     return month < other.month;
+  }
+
+  bool isAfter(Month other){
+    if (year > other.year){
+      return true;
+    }
+    if (year < other.year){
+      return false;
+    }
+    return month > other.month;
   }
 
   static int getDifference(Month month1, Month month2) {
@@ -94,5 +101,9 @@ class Month {
       }
       return r;
     }
+  }
+
+  DateTime toDateTime() {
+    return new DateTime(year, month);
   }
 }

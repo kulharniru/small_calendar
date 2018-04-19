@@ -21,11 +21,19 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
   SmallCalendarController smallCalendarController =
       createSmallCalendarController();
 
-  String displayedMonthText = "____";
+  SmallCalendarController smallCalendarController2 =
+      new SmallCalendarController(
+          initialDate: new DateTime.now().add(new Duration(days: 30)));
+
+  String displayedMonthText;
 
   @override
   void initState() {
     super.initState();
+
+    DateTime displayedMonth = smallCalendarController.displayedMonth;
+    displayedMonthText =
+        "Displaying ${displayedMonth.year}.${displayedMonth.month}";
   }
 
   Widget buildSmallCalendar(BuildContext context) {
@@ -49,7 +57,9 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
       },
       onDisplayedMonthChanged: (int year, int month) {
         setState(() {
-          displayedMonthText = "Displaying $year.$month";
+          DateTime displayedMonth = smallCalendarController.displayedMonth;
+          displayedMonthText =
+              "Displaying ${displayedMonth.year}.${displayedMonth.month}";
           print(displayedMonthText);
         });
       },
@@ -137,7 +147,11 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
                         new RaisedButton(
                           child: new Text("Refresh"),
                           onPressed: () {
-                            smallCalendarController.refreshDayInformation();
+                            //smallCalendarController.refreshDayInformation();
+                            setState(() {
+                              smallCalendarController =
+                                  smallCalendarController2;
+                            });
                           },
                         ),
                         new Divider(),

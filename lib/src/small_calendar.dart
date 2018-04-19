@@ -3,8 +3,8 @@ import 'package:meta/meta.dart';
 
 import 'data/all.dart';
 import 'style_data/all.dart';
-import 'widgets/all.dart';
 import 'small_calendar_controller.dart';
+import 'widgets/all.dart';
 import 'callbacks.dart';
 import 'generator.dart';
 
@@ -30,7 +30,7 @@ class SmallCalendar extends StatefulWidget {
   /// Controller
   final SmallCalendarController controller;
 
-  /// Callback that fires when user selects on a day.
+  /// Callback that fires when user selects a day.
   final DateTimeCallback onDaySelected;
 
   /// Callback that fires when displayed month is changed
@@ -94,39 +94,24 @@ class SmallCalendar extends StatefulWidget {
 }
 
 class _SmallCalendarState extends State<SmallCalendar> {
-  static const _initial_page = 1000000;
-
-  PageController _pageController;
-
-  /// Month that was displayed when widget was first built.
-  Month _initialMonth;
-
   /// List of days to be displayed on weekday indication.
   List<int> _weekdayIndicationDays;
 
-  /// Index of page that is currently being displayed.
-  int _currentPage;
+  MonthPagerController _monthPagerController;
 
   @override
   void initState() {
     super.initState();
 
-    _initPageController();
-    _initInitialMonth();
+    _monthPagerController = new MonthPagerController(
+      initialMonth: new Month.fromDateTime(widget.controller.initialDate),
+    );
+
     initWeekdayIndicationDays();
 
-    widget.controller.attachGoToListener(onGoToDate);
-  }
-
-  void _initPageController() {
-    _pageController = new PageController(initialPage: _initial_page);
-    _currentPage = _initial_page;
-  }
-
-  void _initInitialMonth() {
-    _initialMonth = new Month.fromDateTime(
-      widget.controller.initialDate,
-    );
+    // attaches everything to controller
+    widget.controller.setJumpToListener(_jumpToListener);
+    widget.controller.setDisplayedMonthProvider(_displayedMonthProvider);
   }
 
   void initWeekdayIndicationDays() {
@@ -135,8 +120,6 @@ class _SmallCalendarState extends State<SmallCalendar> {
 
   @override
   void dispose() {
-    widget.controller.detachGoToDateListener(onGoToDate);
-
     super.dispose();
   }
 
@@ -145,55 +128,35 @@ class _SmallCalendarState extends State<SmallCalendar> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.detachGoToDateListener(onGoToDate);
-      widget.controller.attachGoToListener(onGoToDate);
-    }
-//
-//    bool shouldRefresh = false;
-//    if (oldWidget.firstWeekday != widget.firstWeekday) {
-//      shouldRefresh = true;
-//      initWeekdayIndicationDays();
-//    }
-////    if (oldWidget.initialDate.year != widget.initialDate.year ||
-////        oldWidget.initialDate.month != widget.initialDate.month ||
-////        oldWidget.initialDate.day != widget.initialDate.day) {
-////      shouldRefresh = true;
-////      _initPageController();
-////      _initInitialMonth();
-////    }
-//
-//    if (shouldRefresh) {
-//      setState(() {});
-//    }
-  }
+      oldWidget.controller.removeJumpToListener();
+      widget.controller.setJumpToListener(_jumpToListener);
 
-  void _onPageChanged() {
-    int newPage = _pageController.page.toInt();
-    if (_currentPage != newPage) {
-      _currentPage = newPage;
-      callOnDisplayedMonthChangedListener();
-    }
-  }
+      oldWidget.controller.removeDisplayedMonthProvider();
+      widget.controller.setDisplayedMonthProvider(_displayedMonthProvider);
 
-  void callOnDisplayedMonthChangedListener() {
-    if (widget.onDisplayedMonthChanged != null) {
-      Month displayedMonth = _initialMonth.add(
-        _currentPage - _initial_page,
+      _monthPagerController = new MonthPagerController(
+        initialMonth: new Month.fromDateTime(widget.controller.initialDate),
       );
 
-      widget.onDisplayedMonthChanged(
-        displayedMonth.year,
-        displayedMonth.month,
-      );
+      setState(() {
+
+      });
     }
   }
 
-  void onGoToDate(DateTime date) {
-    Month desiredMonth = new Month.fromDateTime(date);
+  // Attached items ------------------------------------------------------------
 
-    int difference = Month.getDifference(_initialMonth, desiredMonth);
-    _pageController.jumpToPage(_initial_page + difference);
+  void _jumpToListener(DateTime date) {
+    _monthPagerController.jumpToMonth(
+      new Month.fromDateTime(date),
+    );
   }
+
+  DateTime _displayedMonthProvider() {
+    return _monthPagerController.displayedMonth.toDateTime();
+  }
+
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -207,26 +170,22 @@ class _SmallCalendarState extends State<SmallCalendar> {
         dayStyleData: widget.dayStyle ?? new DayStyleData(),
         weekdayIndicationStyleData:
             widget.weekdayIndicationStyle ?? new WeekdayIndicationStyleData(),
-        child: new NotificationListener<ScrollNotification>(
-          onNotification: (ScrollNotification value) {
-            if (value is ScrollEndNotification) {
-              _onPageChanged();
+        child: new MonthPager(
+          controller: _monthPagerController,
+          monthPageBuilder: (BuildContext context, Month month) =>
+              new MonthCalendar(
+                month: month,
+                controller: widget.controller,
+                onDaySelected: widget.onDaySelected,
+              ),
+          onMonthChanged: (Month displayedMonth) {
+            if (widget.onDisplayedMonthChanged != null) {
+              widget.onDisplayedMonthChanged(
+                  displayedMonth.year, displayedMonth.month);
             }
           },
-          child: new PageView.builder(
-            controller: _pageController,
-            itemBuilder: _monthCalendarBuilder,
-          ),
         ),
       ),
-    );
-  }
-
-  Widget _monthCalendarBuilder(BuildContext context, int index) {
-    return new MonthCalendar(
-      month: _initialMonth.add(index - _initial_page),
-      controller: widget.controller,
-      onDaySelected: widget.onDaySelected,
     );
   }
 }

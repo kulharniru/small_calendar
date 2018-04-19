@@ -4,6 +4,8 @@ import 'dart:ui';
 
 import 'package:small_calendar/src/callbacks.dart';
 
+typedef DateTime MonthProvider();
+
 class SmallCalendarController {
   /// Date to show when first creating the [SmallCalendar].
   final DateTime initialDate;
@@ -23,7 +25,9 @@ class SmallCalendarController {
   /// Future that returns true if there is a tick3 associated with specific date.
   final IsHasCallback hasTick3Callback;
 
-  Set<DateTimeCallback> _goToListeners = new Set<DateTimeCallback>();
+  DateTimeCallback _jumpToListener;
+
+  MonthProvider _displayedMonthProvider;
 
   Set<VoidCallback> _dayRefreshListeners = new Set<VoidCallback>();
 
@@ -63,23 +67,43 @@ class SmallCalendarController {
     );
   }
 
-  // for listeners -------------------------------------------------------------
-
-  void attachGoToListener(DateTimeCallback listener) {
-    _goToListeners.add(listener);
-  }
-
-  void detachGoToDateListener(DateTimeCallback listener) {
-    _goToListeners.remove(listener);
-  }
-
-  void _notifyGoToListeners(DateTime dateToGoTo) {
-    for (DateTimeCallback listener in _goToListeners) {
-      if (listener != null) {
-        listener(dateToGoTo);
-      }
+  DateTime get displayedMonth {
+    if (_displayedMonthProvider == null) {
+      return initialDate;
+    } else {
+      return _displayedMonthProvider();
     }
   }
+
+  // for listeners -------------------------------------------------------------
+
+  // jumpTo
+
+  void setJumpToListener(DateTimeCallback listener) {
+    _jumpToListener = listener;
+  }
+
+  void removeJumpToListener() {
+    _jumpToListener = null;
+  }
+
+  void _notifyJumpToListener(DateTime date) {
+    if (_jumpToListener != null) {
+      _jumpToListener(date);
+    }
+  }
+
+  // displayed month
+
+  void setDisplayedMonthProvider(MonthProvider provider) {
+    _displayedMonthProvider = provider;
+  }
+
+  void removeDisplayedMonthProvider() {
+    _displayedMonthProvider = null;
+  }
+
+  // refresh
 
   void attachRefreshListener(VoidCallback listener) {
     _dayRefreshListeners.add(listener);
@@ -153,7 +177,7 @@ class SmallCalendarController {
   ///
   /// If month with specific [date] cannot be displayed, it shows the nearest month.
   void goToDate(DateTime date) {
-    _notifyGoToListeners(date);
+    _notifyJumpToListener(date);
   }
 
   /// [SmallCalendar] displays month that shows today's date.
