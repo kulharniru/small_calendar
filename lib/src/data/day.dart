@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 import 'month.dart';
 
+@deprecated
 @immutable
 class Day {
   final Month month;

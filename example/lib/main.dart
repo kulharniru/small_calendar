@@ -18,11 +18,11 @@ class SmallCalendarExampleApp extends StatefulWidget {
 class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
   bool showWeekdayIndication = true;
   bool showTicks = true;
-  SmallCalendarController smallCalendarController =
+  SmallCalendarDataProvider smallCalendarController =
       createSmallCalendarController();
 
-  SmallCalendarController smallCalendarController2 =
-      new SmallCalendarController(
+  SmallCalendarDataProvider smallCalendarController2 =
+      new SmallCalendarDataProvider(
           initialDate: new DateTime.now().add(new Duration(days: 30)));
 
   String displayedMonthText;
@@ -39,13 +39,13 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
   Widget buildSmallCalendar(BuildContext context) {
     return new SmallCalendar(
       firstWeekday: DateTime.monday,
-      controller: smallCalendarController,
-      dayStyle: new DayStyleData(
+      dataProvider: smallCalendarController,
+      dayStyle: new DayStyle(
         showTicks: showTicks,
         tick3Color: Colors.yellow[700],
       ),
       showWeekdayIndication: showWeekdayIndication,
-      weekdayIndicationStyle: new WeekdayIndicationStyleData(
+      weekdayIndicationStyle: new WeekdayIndicationStyle(
         backgroundColor: Theme.of(context).primaryColor,
       ),
       onDaySelected: (DateTime date) {
@@ -69,6 +69,7 @@ class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      theme: new ThemeData(textTheme: new TextTheme(body1: new TextStyle())),
       title: "small_calendar example",
       home: new Scaffold(
         appBar: new AppBar(
@@ -183,7 +184,7 @@ For example purpuses:
   }
 }
 
-SmallCalendarController createSmallCalendarController() {
+SmallCalendarDataProvider createSmallCalendarController() {
   Future<bool> isSelectedCallback(DateTime day) async {
     if (day.day == 10) {
       return true;
@@ -216,7 +217,7 @@ SmallCalendarController createSmallCalendarController() {
     return false;
   }
 
-  return new SmallCalendarController(
+  return new SmallCalendarDataProvider(
     isSelectedCallback: isSelectedCallback,
     hasTick1Callback: hasTick1Callback,
     hasTick2Callback: hasTick2Callback,

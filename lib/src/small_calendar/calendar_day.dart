@@ -29,7 +29,7 @@ class CalendarDay extends StatelessWidget {
     VoidCallback onTap;
     if (onPressed != null) {
       onTap = () {
-        onPressed(dayData.day.toDateTime());
+        onPressed(dayData.day);
       };
     }
 
@@ -90,7 +90,7 @@ class CalendarDay extends StatelessWidget {
         child: new ClipRect(
           child: new Text(
             "${dayData.day.day}",
-            style: dayData.day.isExtended
+            style: dayData.isExtended
                 ? style.extendedDayTextStyle
                 : style.dayTextStyle,
           ),

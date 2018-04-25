@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import 'package:small_calendar/src/style_data/all.dart';
+import 'package:small_calendar/src/small_calendar/style/all.dart';
 
 class StyleInfo extends InheritedWidget {
   final int firstWeekday;
@@ -11,8 +11,8 @@ class StyleInfo extends InheritedWidget {
   final Map<int, String> dayNames;
   final double weekdayIndicationHeight;
 
-  final DayStyleData dayStyleData;
-  final WeekdayIndicationStyleData weekdayIndicationStyleData;
+  final DayStyle dayStyleData;
+  final WeekdayIndicationStyle weekdayIndicationStyleData;
 
   StyleInfo({
     @required this.firstWeekday,

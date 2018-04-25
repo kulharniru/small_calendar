@@ -156,17 +156,12 @@ class _SmallCalendarState extends State<SmallCalendar> {
   }
 
   List<DayData> _generateInitialDayData() {
-    List<Day> days = generateExtendedDaysOfMonth(
-      widget.month,
-      widget.firstWeekday,
-    );
-
-    return days.map((day) => new DayData(day: day)).toList();
+    return generateDayData(widget.month, widget.firstWeekday);
   }
 
   Future<Null> _refreshDaysData() async {
     Future<DayData> refreshDayData(DayData dayData) async {
-      DateTime day = dayData.day.toDateTime();
+      DateTime day = dayData.day;
 
       return dayData.copyWithIsHasChanged(
         isToday: await widget.dataProvider.isToday(day),

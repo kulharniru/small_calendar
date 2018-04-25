@@ -2,9 +2,6 @@ import 'package:meta/meta.dart';
 
 @immutable
 class Month {
-  final int year;
-  final int month;
-
   Month(
     this.year,
     this.month,
@@ -20,6 +17,9 @@ class Month {
       dateTime.month,
     );
   }
+
+  final int year;
+  final int month;
 
   factory Month.now() {
     return new Month.fromDateTime(new DateTime.now());
@@ -73,11 +73,11 @@ class Month {
     return month < other.month;
   }
 
-  bool isAfter(Month other){
-    if (year > other.year){
+  bool isAfter(Month other) {
+    if (year > other.year) {
       return true;
     }
-    if (year < other.year){
+    if (year < other.year) {
       return false;
     }
     return month > other.month;

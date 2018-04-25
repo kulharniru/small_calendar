@@ -9,7 +9,7 @@ import '../callbacks.dart';
 import '../generator.dart';
 import 'style_info.dart';
 import 'weekday_indicator.dart';
-import 'day_widget.dart';
+import 'package:small_calendar/src/small_calendar/calendar_day.dart';
 
 class MonthCalendar extends StatefulWidget {
   final Month month;
@@ -164,7 +164,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
       child: new Row(
         children: daysOfWeek
             .map((day) => new Expanded(
-                  child: new DayWidget(
+                  child: new Day(
                     dayData: day,
                     onPressed: widget.onDaySelected,
                   ),

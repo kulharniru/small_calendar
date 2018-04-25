@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import 'data/all.dart';
-import 'style_data/all.dart';
+import 'package:small_calendar/src/small_calendar/style/all.dart';
 import 'small_calendar_controller.dart';
 import 'widgets/all.dart';
 import 'callbacks.dart';
@@ -13,7 +13,7 @@ class SmallCalendar extends StatefulWidget {
   final int firstWeekday;
 
   /// Style of day widgets.
-  final DayStyleData dayStyle;
+  final DayStyle dayStyle;
 
   /// If true weekday indication will be shown.
   final bool showWeekdayIndication;
@@ -22,7 +22,7 @@ class SmallCalendar extends StatefulWidget {
   final double weekdayIndicationHeight;
 
   /// Style of weekday indication.
-  final WeekdayIndicationStyleData weekdayIndicationStyle;
+  final WeekdayIndicationStyle weekdayIndicationStyle;
 
   /// Map of <int>weekday and <String>weekdayName value pairs.
   final Map<int, String> dayNamesMap;
@@ -57,10 +57,10 @@ class SmallCalendar extends StatefulWidget {
   factory SmallCalendar({
     SmallCalendarController controller,
     int firstWeekday = DateTime.monday,
-    DayStyleData dayStyle,
+    DayStyle dayStyle,
     bool showWeekdayIndication = true,
     double weekdayIndicationHeight = 25.0,
-    WeekdayIndicationStyleData weekdayIndicationStyle,
+    WeekdayIndicationStyle weekdayIndicationStyle,
     Map<int, String> dayNamesMap = oneLetterEnglishDayNames,
     DateTimeCallback onDaySelected,
     YearMonthCallback onDisplayedMonthChanged,
@@ -167,9 +167,9 @@ class _SmallCalendarState extends State<SmallCalendar> {
         weekdayIndicationDays: _weekdayIndicationDays,
         dayNames: widget.dayNamesMap,
         weekdayIndicationHeight: widget.weekdayIndicationHeight,
-        dayStyleData: widget.dayStyle ?? new DayStyleData(),
+        dayStyleData: widget.dayStyle ?? new DayStyle(),
         weekdayIndicationStyleData:
-            widget.weekdayIndicationStyle ?? new WeekdayIndicationStyleData(),
+            widget.weekdayIndicationStyle ?? new WeekdayIndicationStyle(),
         child: new MonthPager(
           controller: _monthPagerController,
           monthPageBuilder: (BuildContext context, Month month) =>
