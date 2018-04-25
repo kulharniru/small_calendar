@@ -80,8 +80,6 @@ class _SmallCalendarPagerState extends State<SmallCalendarPager> {
 
       oldWidget.controller.detach();
       widget.controller.attach(_createPagerPosition());
-
-      setState(() {});
     }
   }
 
