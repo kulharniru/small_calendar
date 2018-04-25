@@ -6,6 +6,7 @@ import 'package:small_calendar/src/data/all.dart';
 import 'style/all.dart';
 import 'callbacks.dart';
 import 'small_calendar_data_provider.dart';
+import 'weekday_indicator.dart';
 
 class SmallCalendar extends StatefulWidget {
   SmallCalendar._internal({
@@ -54,7 +55,7 @@ class SmallCalendar extends StatefulWidget {
     WeekdayIndicationStyle weekdayIndicationStyle,
     DateCallback onDaySelected,
   }) {
-    dataProvider ??= dataProvider;
+    dataProvider ??= new SmallCalendarDataProvider();
 
     dayStyle ??= new DayStyle();
     weekdayIndicationStyle ??= new WeekdayIndicationStyle();
@@ -101,11 +102,15 @@ class SmallCalendar extends StatefulWidget {
 }
 
 class _SmallCalendarState extends State<SmallCalendar> {
+  List<int> _weekdayIndicationDays;
+
   @override
   void initState() {
     super.initState();
 
-    widget.dataProvider.attach(onRefresh);
+    widget.dataProvider.attach(_onRefresh);
+
+    _weekdayIndicationDays = _generateWeekdayIndicationDays();
   }
 
   @override
@@ -113,17 +118,53 @@ class _SmallCalendarState extends State<SmallCalendar> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.dataProvider != widget.dataProvider) {
-      oldWidget.dataProvider.detach(onRefresh);
-      widget.dataProvider.attach(onRefresh);
+      oldWidget.dataProvider.detach(_onRefresh);
+      widget.dataProvider.attach(_onRefresh);
+    }
+
+    if (oldWidget.firstWeekday != widget.firstWeekday) {
+      setState(() {
+        _weekdayIndicationDays = _generateWeekdayIndicationDays();
+      });
     }
   }
 
-  void onRefresh() {
+  List<int> _generateWeekdayIndicationDays() {
+    return generateWeekdays(widget.firstWeekday);
+  }
+
+  void _onRefresh() {
     // TODO
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Text("a");
+    List<Widget> columnItems = <Widget>[];
+
+    if (widget.showWeekdayIndication) {
+      columnItems.add(_buildWeekdayIndication(context));
+    }
+
+    return new ClipRect(
+      child: new Column(
+        children: columnItems,
+      ),
+    );
+  }
+
+  Widget _buildWeekdayIndication(BuildContext context) {
+    return new Container(
+      color: widget.weekdayIndicationStyle.backgroundColor,
+      height: widget.weekdayIndicationStyle.weekdayIndicationHeight,
+      child: new Row(
+        children: _weekdayIndicationDays
+            .map<Widget>((weekday) => new Expanded(
+                    child: new WeekdayIndicator(
+                  text: widget.dayNamesMap[weekday],
+                  weekdayIndicationStyle: widget.weekdayIndicationStyle,
+                )))
+            .toList(),
+      ),
+    );
   }
 }
