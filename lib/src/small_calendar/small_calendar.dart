@@ -12,6 +12,7 @@ import 'small_calendar_data_provider.dart';
 import 'weekday_indicator.dart';
 
 class SmallCalendar extends StatefulWidget {
+  /// Creates a new instance of [SmallCalendar].
   SmallCalendar._internal({
     @required this.month,
     @required this.dataProvider,
@@ -28,13 +29,13 @@ class SmallCalendar extends StatefulWidget {
         assert(dayNamesMap != null),
         assert(dayStyle != null),
         assert(weekdayIndicationStyle != null) {
-    // validates [firstWeekday]
+    // validates firstWeekday
     if (!(firstWeekday >= DateTime.monday && firstWeekday <= DateTime.sunday)) {
       throw new ArgumentError.value(
         firstWeekday,
         "firstWeekday",
         "\"$firstWeekday\" is not a valid weekday. "
-            "Weekday should be between ${DateTime.monday} and ${DateTime.sunday} (both inclusive).",
+            "firstWeekday should be between ${DateTime.monday} and ${DateTime.sunday} (both inclusive).",
       );
     }
 
@@ -75,11 +76,10 @@ class SmallCalendar extends StatefulWidget {
     );
   }
 
-  /// Month that this [SmallCalendar] represents.
+  /// Month that is represented in this [SmallCalendar].
   final DateTime month;
 
-  /// An object that provides IsHas information
-  /// and can be user to notify the widget to refresh its day data.
+  /// An object that provides day data and can be user to notify the widget to refresh its day data.
   final SmallCalendarDataProvider dataProvider;
 
   /// First day of the week (Monday-1, Tuesday-2...).
@@ -120,7 +120,7 @@ class _SmallCalendarState extends State<SmallCalendar> {
     widget.dataProvider.attach(_refreshDaysData);
 
     _weekdayIndicationDays = _generateWeekdayIndicationDays();
-    _daysData = _generateInitialDayData();
+    _daysData = _generateDefaultDaysData();
     _refreshDaysData();
   }
 
@@ -146,7 +146,8 @@ class _SmallCalendarState extends State<SmallCalendar> {
             oldWidget.month.month != widget.month.month)) {
       setState(() {
         _weekdayIndicationDays = _generateWeekdayIndicationDays();
-        _daysData = _generateInitialDayData();
+        _daysData = _generateDefaultDaysData();
+        _refreshDaysData();
       });
     }
   }
@@ -155,8 +156,8 @@ class _SmallCalendarState extends State<SmallCalendar> {
     return generateWeekdays(widget.firstWeekday);
   }
 
-  List<DayData> _generateInitialDayData() {
-    return generateDayData(widget.month, widget.firstWeekday);
+  List<DayData> _generateDefaultDaysData() {
+    return generateDaysData(widget.month, widget.firstWeekday);
   }
 
   Future<Null> _refreshDaysData() async {

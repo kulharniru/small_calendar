@@ -29,7 +29,7 @@ class SmallCalendarDataProvider {
   /// Future that returns true if there is a tick3 associated with a day.
   final IsHasCallback hasTick3Callback;
 
-  /// Listeners provided by [SmallCalendar], to notify them to refresh day information.
+  /// Listeners provided by [SmallCalendar]s, to notify them to refresh day information.
   Set<VoidCallback> _refreshListeners = new Set<VoidCallback>();
 
   /// Registers a given [refreshListener] with the controller.
@@ -54,8 +54,6 @@ class SmallCalendarDataProvider {
       refreshListener();
     }
   }
-
-  // is has --------------------------------------------------------------------
 
   /// Future that returns true if [day] should be marked as today.
   Future<bool> isToday(DateTime day) async {

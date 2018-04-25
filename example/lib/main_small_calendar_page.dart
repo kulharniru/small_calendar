@@ -16,6 +16,9 @@ class SmallCalendarPageExample extends StatefulWidget {
 }
 
 class _SmallCalendarPageExampleState extends State<SmallCalendarPageExample> {
+  SmallCalendarDataProvider smallCalendarDataProvider =
+      createSmallCalendarDataProvider();
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -24,38 +27,23 @@ class _SmallCalendarPageExampleState extends State<SmallCalendarPageExample> {
         appBar: new AppBar(
           title: new Text("Small Calendar Page Example"),
         ),
-        body: new Column(
-          children: <Widget>[
-            new Expanded(
-              child: new Container(
-                color: Colors.grey[200],
-                child: new Center(
-                  child: new Container(
-                    width: 250.0,
-                    height: 250.0,
-                    color: Colors.white,
-                    child: new SmallCalendar(
-                      month: new DateTime.now(),
-                      dataProvider: createSmallCalendarDataProvider(),
-                      weekdayIndicationStyle: new WeekdayIndicationStyle(
-                        backgroundColor: Colors.blue[200],
-                      ),
-                      dayStyle: new DayStyle(
-                        tick3Color: Colors.yellow[800],
-                      ),
-                      onDaySelected: (DateTime date) {
-                        print("$date");
-                      },
-                    ),
-                  ),
-                ),
+        body: new Container(
+          color: Colors.grey[200],
+          child: new Center(
+            child: new Container(
+              color: Colors.white,
+              width: 300.0,
+              height: 300.0,
+              child: new SmallCalendar(
+                month: new DateTime.now(),
+                dayStyle: new DayStyle(tick3Color: Colors.orange),
+                dataProvider: smallCalendarDataProvider,
+                onDaySelected: (DateTime day) {
+                  print("Selected: ${day.year}.${day.month}.${day.day}");
+                },
               ),
             ),
-            new Expanded(
-                child: new Center(
-              child: new Text("a"),
-            ))
-          ],
+          ),
         ),
       ),
     );

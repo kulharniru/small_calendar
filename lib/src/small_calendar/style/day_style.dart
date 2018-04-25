@@ -53,10 +53,11 @@ class DayStyle {
     );
   }
 
-  /// [TextStyle] of day widget.
+  /// [TextStyle] of a day inside a [SmallCalendar].
   final TextStyle dayTextStyle;
 
-  /// [TextStyle] of day widget, that is representing a day of previous or next month.
+  /// [TextStyle] of a day inside a [SmallCalendar],
+  /// that is not a part of the month that a smallCalendar represents.
   final TextStyle extendedDayTextStyle;
 
   /// [Color] of indication that specific day is today.

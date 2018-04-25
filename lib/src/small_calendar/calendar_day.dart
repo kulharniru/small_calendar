@@ -13,7 +13,6 @@ class CalendarDay extends StatelessWidget {
     this.onPressed,
   })  : assert(style != null),
         assert(dayData != null);
-//        super(key: new ObjectKey(dayData.day));
 
   /// [DayData] for this [CalendarDay].
   final DayData dayData;
@@ -21,7 +20,7 @@ class CalendarDay extends StatelessWidget {
   /// Style of [CalendarDay].
   final DayStyle style;
 
-  /// Called when user presses on this [CalendarDay].
+  /// Called whenever user presses on this [CalendarDay].
   final DateCallback onPressed;
 
   @override
@@ -49,10 +48,11 @@ class CalendarDay extends StatelessWidget {
       columnItems.add(
         new Container(height: style.textTickSeparation),
       );
+      // ticks
       columnItems.add(
         new Expanded(
           flex: 1,
-          child: _buildTicks(context),
+          child: _buildTicks(),
         ),
       );
     }
@@ -99,7 +99,7 @@ class CalendarDay extends StatelessWidget {
     );
   }
 
-  Widget _buildTicks(BuildContext context) {
+  Widget _buildTicks() {
     List<Widget> ticks = <Widget>[];
 
     // tick1
@@ -137,7 +137,9 @@ class CalendarDay extends StatelessWidget {
     );
   }
 
-  Widget _buildTick({@required Color color}) {
+  Widget _buildTick({
+    @required Color color,
+  }) {
     return new Expanded(
       child: new Container(
         decoration: new BoxDecoration(

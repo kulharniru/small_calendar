@@ -23,10 +23,10 @@ class WeekdayIndicationStyle {
     );
   }
 
-  /// Height of weekday indication area
+  /// Height of weekday indication area.
   final double weekdayIndicationHeight;
 
-  /// [TextStyle] of weekday indication widgets.
+  /// [TextStyle] of weekday indication.
   final TextStyle textStyle;
 
   /// Background [Color] of weekday indication area.

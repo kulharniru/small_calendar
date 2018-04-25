@@ -8,7 +8,7 @@ import 'day_data.dart';
 /// eg.
 /// If first day of [month] is on Wednesday and [firstWeekday] is Monday,
 /// the first two days of generated list will be the last two days of the month the is before the [month].
-List<DayData> generateDayData(DateTime month, int firstWeekday) {
+List<DayData> generateDaysData(DateTime month, int firstWeekday) {
   List<DayData> r = <DayData>[];
 
   DateTime currentDay;

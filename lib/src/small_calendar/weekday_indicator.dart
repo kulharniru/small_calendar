@@ -10,8 +10,10 @@ class WeekdayIndicator extends StatelessWidget {
   })  : assert(text != null),
         assert(weekdayIndicationStyle != null);
 
+  /// Text that is displayed inside this [WeekdayIndicator].
   final String text;
 
+  /// Style of weekdayIndication.
   final WeekdayIndicationStyle weekdayIndicationStyle;
 
   @override
