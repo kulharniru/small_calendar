@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'callbacks.dart';
 
-class SmallCalendarInformationProvider {
-  /// Creates a new instance of [SmallCalendarInformationProvider].
-  SmallCalendarInformationProvider({
+class SmallCalendarDataProvider {
+  /// Creates a new instance of [SmallCalendarDataProvider].
+  SmallCalendarDataProvider({
     this.isTodayCallback,
     this.isSelectedCallback,
     this.hasTick1Callback,
@@ -35,7 +35,7 @@ class SmallCalendarInformationProvider {
   /// Registers a given [refreshListener] with the controller.
   ///
   /// Multiple refresh listeners can be attached.
-  /// It is recommended that all [SmallCalendar] widgets attach to the same [SmallCalendarInformationProvider].
+  /// It is recommended that all [SmallCalendar] widgets attach to the same [SmallCalendarDataProvider].
   void attach(VoidCallback refreshListener) {
     _refreshListeners.add(refreshListener);
   }
