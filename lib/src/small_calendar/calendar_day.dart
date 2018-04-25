@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import 'package:small_calendar/src/callbacks.dart';
-import 'package:small_calendar/src/data/all.dart';
-import '../style/day_style.dart';
+import 'package:small_calendar/src/data/day_data.dart';
+
+import 'style/day_style.dart';
+import 'callbacks.dart';
 
 class CalendarDay extends StatelessWidget {
-  final DayData dayData;
-  final DayStyle style;
-  final DateTimeCallback onPressed;
-
   CalendarDay({
-    @required this.style,
     @required this.dayData,
-    @required this.onPressed,
+    @required this.style,
+    this.onPressed,
   })  : assert(style != null),
-        assert(dayData != null),
-        assert(onPressed != null),
-        super(key: new ObjectKey(dayData.day));
+        assert(dayData != null);
+//        super(key: new ObjectKey(dayData.day));
+
+  /// [DayData] for this [CalendarDay].
+  final DayData dayData;
+
+  /// Style of [CalendarDay].
+  final DayStyle style;
+
+  /// Called when user presses on this [CalendarDay].
+  final DateCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -28,29 +33,28 @@ class CalendarDay extends StatelessWidget {
       };
     }
 
-    List<Widget> mainColumnItems = <Widget>[];
+    List<Widget> columnItems = <Widget>[];
 
-    // text
-    mainColumnItems.add(
+    // adds text
+    columnItems.add(
       new Expanded(
         flex: 3,
         child: _buildDayNumber(context),
       ),
     );
 
-    // ticks
+    // adds ticks
     if (style.showTicks) {
       // text-tick separation
-      mainColumnItems.add(
+      columnItems.add(
         new Container(height: style.textTickSeparation),
       );
-      mainColumnItems.add(
+      columnItems.add(
         new Expanded(
           flex: 1,
           child: _buildTicks(context),
         ),
       );
-      // ticks
     }
 
     return new Container(
@@ -60,9 +64,8 @@ class CalendarDay extends StatelessWidget {
         child: new InkWell(
           onTap: onTap,
           child: new Column(
-            mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: mainColumnItems,
+            children: columnItems,
           ),
         ),
       ),

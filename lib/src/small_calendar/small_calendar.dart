@@ -1,27 +1,30 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import 'package:small_calendar/src/data/all.dart';
 
 import 'style/all.dart';
+import 'calendar_day.dart';
 import 'callbacks.dart';
 import 'small_calendar_data_provider.dart';
 import 'weekday_indicator.dart';
 
 class SmallCalendar extends StatefulWidget {
   SmallCalendar._internal({
+    @required this.month,
     @required this.dataProvider,
     @required this.firstWeekday,
     @required this.showWeekdayIndication,
-    @required this.showTicks,
     @required this.dayNamesMap,
     @required this.dayStyle,
     @required this.weekdayIndicationStyle,
     this.onDaySelected,
-  })  : assert(dataProvider != null),
+  })  : assert(month != null),
+        assert(dataProvider != null),
         assert(firstWeekday != null),
         assert(showWeekdayIndication != null),
-        assert(showTicks != null),
         assert(dayNamesMap != null),
         assert(dayStyle != null),
         assert(weekdayIndicationStyle != null) {
@@ -46,10 +49,10 @@ class SmallCalendar extends StatefulWidget {
   }
 
   factory SmallCalendar({
+    @required DateTime month,
     SmallCalendarDataProvider dataProvider,
     int firstWeekday = DateTime.monday,
     bool showWeekdayIndication = true,
-    bool showTicks = true,
     Map<int, String> dayNamesMap = oneLetterEnglishDayNames,
     DayStyle dayStyle,
     WeekdayIndicationStyle weekdayIndicationStyle,
@@ -61,16 +64,19 @@ class SmallCalendar extends StatefulWidget {
     weekdayIndicationStyle ??= new WeekdayIndicationStyle();
 
     return new SmallCalendar._internal(
+      month: month,
       dataProvider: dataProvider,
       firstWeekday: firstWeekday,
       showWeekdayIndication: showWeekdayIndication,
-      showTicks: showTicks,
       dayNamesMap: dayNamesMap,
       dayStyle: dayStyle,
       weekdayIndicationStyle: weekdayIndicationStyle,
       onDaySelected: onDaySelected,
     );
   }
+
+  /// Month that this [SmallCalendar] represents.
+  final DateTime month;
 
   /// An object that provides IsHas information
   /// and can be user to notify the widget to refresh its day data.
@@ -81,9 +87,6 @@ class SmallCalendar extends StatefulWidget {
 
   /// If true weekday indication will be shown.
   final bool showWeekdayIndication;
-
-  /// If true ticks will be shown.
-  final bool showTicks;
 
   /// Map of <int>weekday and <String>weekdayName value pairs.
   final Map<int, String> dayNamesMap;
@@ -102,15 +105,30 @@ class SmallCalendar extends StatefulWidget {
 }
 
 class _SmallCalendarState extends State<SmallCalendar> {
+  bool isActive;
+
   List<int> _weekdayIndicationDays;
+
+  List<DayData> _daysData;
 
   @override
   void initState() {
     super.initState();
 
-    widget.dataProvider.attach(_onRefresh);
+    isActive = true;
+
+    widget.dataProvider.attach(_refreshDaysData);
 
     _weekdayIndicationDays = _generateWeekdayIndicationDays();
+    _daysData = _generateInitialDayData();
+    _refreshDaysData();
+  }
+
+  @override
+  void dispose() {
+    isActive = false;
+
+    super.dispose();
   }
 
   @override
@@ -118,13 +136,17 @@ class _SmallCalendarState extends State<SmallCalendar> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.dataProvider != widget.dataProvider) {
-      oldWidget.dataProvider.detach(_onRefresh);
-      widget.dataProvider.attach(_onRefresh);
+      oldWidget.dataProvider.detach(_refreshDaysData);
+      widget.dataProvider.attach(_refreshDaysData);
+      _refreshDaysData();
     }
 
-    if (oldWidget.firstWeekday != widget.firstWeekday) {
+    if (oldWidget.firstWeekday != widget.firstWeekday ||
+        (oldWidget.month.year != widget.month.year ||
+            oldWidget.month.month != widget.month.month)) {
       setState(() {
         _weekdayIndicationDays = _generateWeekdayIndicationDays();
+        _daysData = _generateInitialDayData();
       });
     }
   }
@@ -133,8 +155,37 @@ class _SmallCalendarState extends State<SmallCalendar> {
     return generateWeekdays(widget.firstWeekday);
   }
 
-  void _onRefresh() {
-    // TODO
+  List<DayData> _generateInitialDayData() {
+    List<Day> days = generateExtendedDaysOfMonth(
+      widget.month,
+      widget.firstWeekday,
+    );
+
+    return days.map((day) => new DayData(day: day)).toList();
+  }
+
+  Future<Null> _refreshDaysData() async {
+    Future<DayData> refreshDayData(DayData dayData) async {
+      DateTime day = dayData.day.toDateTime();
+
+      return dayData.copyWithIsHasChanged(
+        isToday: await widget.dataProvider.isToday(day),
+        isSelected: await widget.dataProvider.isSelected(day),
+        hasTick1: await widget.dataProvider.hasTick1(day),
+        hasTick2: await widget.dataProvider.hasTick2(day),
+        hasTick3: await widget.dataProvider.hasTick3(day),
+      );
+    }
+
+    for (int i = 0; i < _daysData.length; i++) {
+      refreshDayData(_daysData[i]).then((refreshedDayData) {
+        if (!isActive) return;
+
+        setState(() {
+          _daysData[i] = refreshedDayData;
+        });
+      });
+    }
   }
 
   @override
@@ -145,10 +196,10 @@ class _SmallCalendarState extends State<SmallCalendar> {
       columnItems.add(_buildWeekdayIndication(context));
     }
 
-    return new ClipRect(
-      child: new Column(
-        children: columnItems,
-      ),
+    columnItems.addAll(_buildWeeks(context));
+
+    return new Column(
+      children: columnItems,
     );
   }
 
@@ -165,6 +216,35 @@ class _SmallCalendarState extends State<SmallCalendar> {
                 )))
             .toList(),
       ),
+    );
+  }
+
+  List<Widget> _buildWeeks(BuildContext context) {
+    List<Widget> r = <Widget>[];
+
+    for (int i = 0; i < _daysData.length; i += 7) {
+      Iterable<DayData> daysOfWeek = _daysData.getRange(i, i + 7);
+      r.add(
+        new Expanded(
+          child: _buildWeek(context, daysOfWeek),
+        ),
+      );
+    }
+
+    return r;
+  }
+
+  Widget _buildWeek(BuildContext context, Iterable<DayData> daysOfWeek) {
+    return new Row(
+      children: daysOfWeek
+          .map((dayData) => new Expanded(
+                child: new CalendarDay(
+                  dayData: dayData,
+                  style: widget.dayStyle,
+                  onPressed: widget.onDaySelected,
+                ),
+              ))
+          .toList(),
     );
   }
 }
