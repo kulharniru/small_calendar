@@ -12,14 +12,14 @@ import 'weekday_indicator.dart';
 class SmallCalendar extends StatelessWidget {
   SmallCalendar({
     @required this.month,
-    this.onDaySelected,
+    this.onDayTap,
   });
 
   /// Month that is represented in this [SmallCalendar].
   final DateTime month;
 
-  /// Called whenever user selects a day.
-  final DateCallback onDaySelected;
+  /// Called whenever user taps(clicks) on a day.
+  final DateCallback onDayTap;
 
   List<int> _generateWeekdayIndicationDays(BuildContext context) {
     return generateWeekdays(
@@ -98,7 +98,7 @@ class SmallCalendar extends StatelessWidget {
                       SmallCalendarDataPropagator.of(context).getDayData(day),
                   isExtended: day.month != month.month,
                   style: SmallCalendarStyle.of(context).dayStyle,
-                  onPressed: onDaySelected,
+                  onPressed: onDayTap,
                 ),
               ))
           .toList(),

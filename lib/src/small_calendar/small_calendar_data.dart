@@ -155,57 +155,114 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
   /// Refreshes [DayData] of specified [day].
   void _refreshDayDataOfDay(Day day) {
     DateTime date = day.toDateTime();
-    DayData previousDayData = _dayToDayDataMap[day];
 
-    Future<bool> defaultIsHas(bool returnValue) async {
-      return returnValue;
-    }
-
-    // prepares all callbacks required to refresh dayData
-    List<Future<bool>> isHasCallbacks = <Future<bool>>[];
+    // is Today
     if (widget.isTodayCallback != null) {
-      isHasCallbacks.add(widget.isTodayCallback(date));
-    } else {
-      isHasCallbacks.add(defaultIsHas(previousDayData.isToday));
-    }
-
-    if (widget.isSelectedCallback != null) {
-      isHasCallbacks.add(widget.isSelectedCallback(date));
-    } else {
-      isHasCallbacks.add(defaultIsHas(previousDayData.isSelected));
-    }
-
-    if (widget.hasTick1Callback != null) {
-      isHasCallbacks.add(widget.hasTick1Callback(date));
-    } else {
-      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick1));
-    }
-
-    if (widget.hasTick2Callback != null) {
-      isHasCallbacks.add(widget.hasTick2Callback(date));
-    } else {
-      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick2));
-    }
-
-    if (widget.hasTick3Callback != null) {
-      isHasCallbacks.add(widget.hasTick3Callback(date));
-    } else {
-      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick3));
-    }
-
-    Future.wait(isHasCallbacks).then(
-      (List<bool> isHas) {
+      widget.isTodayCallback(date).then((isToday) {
         setState(() {
           _dayToDayDataMap[day] = _dayToDayDataMap[day].copyWithIsHasChanged(
-            isToday: isHas[0],
-            isSelected: isHas[1],
-            hasTick1: isHas[2],
-            hasTick2: isHas[3],
-            hasTick3: isHas[4],
+            isToday: isToday,
           );
         });
-      },
-    );
+      });
+    }
+
+    // isSelected
+    if (widget.isSelectedCallback != null) {
+      widget.isSelectedCallback(date).then((isSelected) {
+        setState(() {
+          _dayToDayDataMap[day] = _dayToDayDataMap[day].copyWithIsHasChanged(
+            isSelected: isSelected,
+          );
+        });
+      });
+    }
+
+    // hasTick1
+    if (widget.hasTick1Callback != null) {
+      widget.hasTick1Callback(date).then((hasTick1) {
+        setState(() {
+          _dayToDayDataMap[day] = _dayToDayDataMap[day].copyWithIsHasChanged(
+            hasTick1: hasTick1,
+          );
+        });
+      });
+    }
+
+    // hasTick2
+    if (widget.hasTick2Callback != null) {
+      widget.hasTick2Callback(date).then((hasTick2) {
+        setState(() {
+          _dayToDayDataMap[day] = _dayToDayDataMap[day].copyWithIsHasChanged(
+            hasTick2: hasTick2,
+          );
+        });
+      });
+    }
+
+    // hasTick3
+    if (widget.hasTick3Callback != null) {
+      widget.hasTick3Callback(date).then((hasTick3) {
+        setState(() {
+          _dayToDayDataMap[day] = _dayToDayDataMap[day].copyWithIsHasChanged(
+            hasTick3: hasTick3,
+          );
+        });
+      });
+    }
+
+//    DateTime date = day.toDateTime();
+//    DayData previousDayData = _dayToDayDataMap[day];
+//
+//    Future<bool> defaultIsHas(bool returnValue) async {
+//      return returnValue;
+//    }
+//
+//    // prepares all callbacks required to refresh dayData
+//    List<Future<bool>> isHasCallbacks = <Future<bool>>[];
+//    if (widget.isTodayCallback != null) {
+//      isHasCallbacks.add(widget.isTodayCallback(date));
+//    } else {
+//      isHasCallbacks.add(defaultIsHas(previousDayData.isToday));
+//    }
+//
+//    if (widget.isSelectedCallback != null) {
+//      isHasCallbacks.add(widget.isSelectedCallback(date));
+//    } else {
+//      isHasCallbacks.add(defaultIsHas(previousDayData.isSelected));
+//    }
+//
+//    if (widget.hasTick1Callback != null) {
+//      isHasCallbacks.add(widget.hasTick1Callback(date));
+//    } else {
+//      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick1));
+//    }
+//
+//    if (widget.hasTick2Callback != null) {
+//      isHasCallbacks.add(widget.hasTick2Callback(date));
+//    } else {
+//      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick2));
+//    }
+//
+//    if (widget.hasTick3Callback != null) {
+//      isHasCallbacks.add(widget.hasTick3Callback(date));
+//    } else {
+//      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick3));
+//    }
+//
+//    Future.wait(isHasCallbacks).then(
+//      (List<bool> isHas) {
+//        setState(() {
+//          _dayToDayDataMap[day] = _dayToDayDataMap[day].copyWithIsHasChanged(
+//            isToday: isHas[0],
+//            isSelected: isHas[1],
+//            hasTick1: isHas[2],
+//            hasTick2: isHas[3],
+//            hasTick3: isHas[4],
+//          );
+//        });
+//      },
+//    );
   }
 
   /// Returns [DayData] for a specified [day].
