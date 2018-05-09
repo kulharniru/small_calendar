@@ -82,6 +82,7 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
                   height: 250.0,
                   color: Colors.white,
                   child: new SmallCalendarData(
+                    firstWeekday: one ? DateTime.monday : DateTime.wednesday,
                     isTodayCallback: one ? _isTodayCallback : _isTodayCallback2,
                     child: new SmallCalendarPager(
                       controller: _smallCalendarPagerController,
