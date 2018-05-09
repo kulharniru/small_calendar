@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import 'day.dart';
+
 @immutable
 class DayData {
   DayData({
@@ -17,8 +19,8 @@ class DayData {
         assert(hasTick2 != null),
         assert(hasTick3 != null);
 
-  /// Day that this [DayData] represents.
-  final DateTime day;
+  /// Day fow which this [DayData] holds data.
+  final Day day;
 
   /// True if this day is extended (does not belong to month that is displayed in).
   final bool isExtended;

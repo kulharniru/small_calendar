@@ -1,3 +1,4 @@
+import 'day.dart';
 import 'day_data.dart';
 
 /// Generates a list of [DayData] to be displayed for specific calendar [month].
@@ -23,7 +24,7 @@ List<DayData> generateDaysData(DateTime month, int firstWeekday) {
   while (currentDay.month != month.month) {
     r.add(
       new DayData(
-        day: currentDay,
+        day: new Day.fromDateTime(currentDay),
         isExtended: true,
       ),
     );
@@ -34,7 +35,7 @@ List<DayData> generateDaysData(DateTime month, int firstWeekday) {
   while (currentDay.month == month.month) {
     r.add(
       new DayData(
-        day: currentDay,
+        day: new Day.fromDateTime(currentDay),
         isExtended: false,
       ),
     );
@@ -45,7 +46,7 @@ List<DayData> generateDaysData(DateTime month, int firstWeekday) {
   while (currentDay.weekday != firstWeekday) {
     r.add(
       new DayData(
-        day: currentDay,
+        day: new Day.fromDateTime(currentDay),
         isExtended: true,
       ),
     );
