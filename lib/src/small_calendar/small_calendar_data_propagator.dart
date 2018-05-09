@@ -5,6 +5,7 @@ import 'package:small_calendar/src/data/all.dart';
 
 typedef DayData OnGetDayData(Day day);
 
+/// Widget for propagating dayData down the widget tree.
 class SmallCalendarDataPropagator extends InheritedWidget {
   SmallCalendarDataPropagator({
     @required this.firstWeekday,

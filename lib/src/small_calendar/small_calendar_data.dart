@@ -8,6 +8,35 @@ import 'package:small_calendar/src/data/all.dart';
 import 'callbacks.dart';
 import 'small_calendar_data_propagator.dart';
 
+typedef void _ControllerRefreshListener();
+
+/// Class for controlling [SmallCalendarData].
+///
+/// It is used for notifying attached [SmallCalendarData] to refresh its dayData.
+class SmallCalendarDataController {
+  _ControllerRefreshListener _listener;
+
+  /// Notifies attached [SmallCalendarData] to refresh its dayData.
+  void refreshDaysData() {
+    if (_listener != null) {
+      _listener();
+    }
+  }
+
+  /// Registers the given [SmallCalendarData] with the controller.
+  ///
+  /// If some [SmallCalendarData] is already registered, it is replaced with the new [listener].
+  void attach(_ControllerRefreshListener listener) {
+    _listener = listener;
+  }
+
+  /// Unregisters the previously attached [SmallCalendarData].
+  void detach() {
+    _listener = null;
+  }
+}
+
+/// Class that provides data to [SmallCalendar].
 class SmallCalendarData extends StatefulWidget {
   SmallCalendarData({
     this.firstWeekday = DateTime.monday,
@@ -17,6 +46,7 @@ class SmallCalendarData extends StatefulWidget {
     this.hasTick1Callback,
     this.hasTick2Callback,
     this.hasTick3Callback,
+    this.controller,
     @required this.child,
   })  : assert(firstWeekday != null),
         assert(dayNamesMap != null) {
@@ -26,7 +56,7 @@ class SmallCalendarData extends StatefulWidget {
         firstWeekday,
         "firstWeekday",
         "\"$firstWeekday\" is not a valid weekday. "
-            "firstWeekday should be between ${DateTime.monday} and ${DateTime.sunday} (both inclusive).",
+            "firstWeekday should be between ${DateTime.monday} and ${DateTime.sunday} (both inclusive)",
       );
     }
 
@@ -34,7 +64,7 @@ class SmallCalendarData extends StatefulWidget {
     for (int i = DateTime.monday; i <= DateTime.sunday; i++) {
       if (!dayNamesMap.containsKey(i)) {
         throw new ArgumentError(
-          "dayNamesMap shuld contain a key-value pair for every weekday (missing value for weekday: $i).",
+          "dayNamesMap shuld contain a key-value pair for every weekday (missing value for weekday: $i)",
         );
       }
     }
@@ -61,6 +91,9 @@ class SmallCalendarData extends StatefulWidget {
   /// Future that returns true if there is a tick3 associated with a day.
   final IsHasCallback hasTick3Callback;
 
+  /// Object that is used to notify this [SmallCalendarData] to refresh its dayData.
+  final SmallCalendarDataController controller;
+
   /// Child of this widget.
   final Widget child;
 
@@ -73,6 +106,24 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
   Map<Day, DayData> _dayToDayDataMap = new Map<Day, DayData>();
 
   @override
+  void initState() {
+    super.initState();
+
+    if (widget.controller != null) {
+      widget.controller.attach(_onRefreshDaysData);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller != null) {
+      widget.controller.detach();
+    }
+
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(SmallCalendarData oldWidget) {
     super.didUpdateWidget(oldWidget);
 
@@ -83,9 +134,18 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
         widget.hasTick3Callback != oldWidget.hasTick3Callback) {
       _refreshDayToDayDataMap();
     }
+
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller.detach();
+      widget.controller.attach(_onRefreshDaysData);
+    }
   }
 
-  /// Refreshes [DayData] of all [Day]s in [_dayToDayDataMap].
+  void _onRefreshDaysData() {
+    _refreshDayToDayDataMap();
+  }
+
+  /// Refreshes [DayData] of all [Day]s in the [_dayToDayDataMap].
   void _refreshDayToDayDataMap() {
     for (Day day in _dayToDayDataMap.keys) {
       _refreshDayDataOfDay(day);
@@ -95,41 +155,42 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
   /// Refreshes [DayData] of specified [day].
   void _refreshDayDataOfDay(Day day) {
     DateTime date = day.toDateTime();
+    DayData previousDayData = _dayToDayDataMap[day];
 
-    Future<bool> defaultIsHas() async {
-      return false;
+    Future<bool> defaultIsHas(bool returnValue) async {
+      return returnValue;
     }
 
-    // prepares all callback required to refresh dayData
+    // prepares all callbacks required to refresh dayData
     List<Future<bool>> isHasCallbacks = <Future<bool>>[];
     if (widget.isTodayCallback != null) {
       isHasCallbacks.add(widget.isTodayCallback(date));
     } else {
-      isHasCallbacks.add(defaultIsHas());
+      isHasCallbacks.add(defaultIsHas(previousDayData.isToday));
     }
 
     if (widget.isSelectedCallback != null) {
       isHasCallbacks.add(widget.isSelectedCallback(date));
     } else {
-      isHasCallbacks.add(defaultIsHas());
+      isHasCallbacks.add(defaultIsHas(previousDayData.isSelected));
     }
 
     if (widget.hasTick1Callback != null) {
       isHasCallbacks.add(widget.hasTick1Callback(date));
     } else {
-      isHasCallbacks.add(defaultIsHas());
+      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick1));
     }
 
     if (widget.hasTick2Callback != null) {
       isHasCallbacks.add(widget.hasTick2Callback(date));
     } else {
-      isHasCallbacks.add(defaultIsHas());
+      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick2));
     }
 
     if (widget.hasTick3Callback != null) {
       isHasCallbacks.add(widget.hasTick3Callback(date));
     } else {
-      isHasCallbacks.add(defaultIsHas());
+      isHasCallbacks.add(defaultIsHas(previousDayData.hasTick3));
     }
 
     Future.wait(isHasCallbacks).then(
@@ -149,11 +210,14 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
 
   /// Returns [DayData] for a specified [day].
   ///
-  /// If required dayData is not yet generated,
-  /// it generates default dayData and start a refresh.
+  /// If required dayData does not yet exist,
+  /// a default dayData is generated
+  /// and a refresh is started.
   DayData _onGetDayData(Day day) {
-    if (!_dayToDayDataMap.containsKey(day)){
-      _dayToDayDataMap[day] = new DayData(day: day, isExtended: false);
+    if (!_dayToDayDataMap.containsKey(day)) {
+      _dayToDayDataMap[day] = new DayData(
+        day: day,
+      );
 
       _refreshDayDataOfDay(day);
     }

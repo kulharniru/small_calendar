@@ -6,7 +6,6 @@ import 'day.dart';
 class DayData {
   DayData({
     @required this.day,
-    @required this.isExtended,
     this.isToday = false,
     this.isSelected = false,
     this.hasTick1 = false,
@@ -21,9 +20,6 @@ class DayData {
 
   /// Day fow which this [DayData] holds data.
   final Day day;
-
-  /// True if this day is extended (does not belong to month that is displayed in).
-  final bool isExtended;
 
   final bool isToday;
   final bool isSelected;
@@ -40,7 +36,6 @@ class DayData {
   }) {
     return new DayData(
       day: day,
-      isExtended: isExtended,
       isToday: isToday ?? this.isToday,
       isSelected: isSelected ?? this.isSelected,
       hasTick1: hasTick1 ?? this.hasTick1,
