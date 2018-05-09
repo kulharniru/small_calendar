@@ -96,13 +96,43 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
   void _refreshDayData(Day day) {
     DateTime date = day.toDateTime();
 
-    Future.wait(<Future<bool>>[
-      widget.isTodayCallback(date),
-      widget.isSelectedCallback(date),
-      widget.hasTick1Callback(date),
-      widget.hasTick2Callback(date),
-      widget.hasTick3Callback(date),
-    ]).then(
+    Future<bool> defaultIsHas() async {
+      return false;
+    }
+
+    // prepares all callback required to refresh dayData
+    List<Future<bool>> isHasCallbacks = <Future<bool>>[];
+    if (widget.isTodayCallback != null) {
+      isHasCallbacks.add(widget.isTodayCallback(date));
+    } else {
+      isHasCallbacks.add(defaultIsHas());
+    }
+
+    if (widget.isSelectedCallback != null) {
+      isHasCallbacks.add(widget.isSelectedCallback(date));
+    } else {
+      isHasCallbacks.add(defaultIsHas());
+    }
+
+    if (widget.hasTick1Callback != null) {
+      isHasCallbacks.add(widget.hasTick1Callback(date));
+    } else {
+      isHasCallbacks.add(defaultIsHas());
+    }
+
+    if (widget.hasTick2Callback != null) {
+      isHasCallbacks.add(widget.hasTick2Callback(date));
+    } else {
+      isHasCallbacks.add(defaultIsHas());
+    }
+
+    if (widget.hasTick3Callback != null) {
+      isHasCallbacks.add(widget.hasTick3Callback(date));
+    } else {
+      isHasCallbacks.add(defaultIsHas());
+    }
+
+    Future.wait(isHasCallbacks).then(
       (List<bool> isHas) {
         setState(() {
           _dayToDayDataMap[day] = _dayToDayDataMap[day].copyWithIsHasChanged(

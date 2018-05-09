@@ -9,13 +9,17 @@ import 'callbacks.dart';
 class CalendarDay extends StatelessWidget {
   CalendarDay({
     @required this.dayData,
+    @required this.isExtended,
     @required this.style,
     this.onPressed,
   })  : assert(style != null),
+        assert(isExtended != null),
         assert(dayData != null);
 
   /// [DayData] for this [CalendarDay].
   final DayData dayData;
+
+  final bool isExtended;
 
   /// Style of [CalendarDay].
   final DayStyle style;
@@ -28,7 +32,7 @@ class CalendarDay extends StatelessWidget {
     VoidCallback onTap;
     if (onPressed != null) {
       onTap = () {
-        onPressed(dayData.day);
+        onPressed(dayData.day.toDateTime());
       };
     }
 
@@ -90,9 +94,7 @@ class CalendarDay extends StatelessWidget {
         child: new ClipRect(
           child: new Text(
             "${dayData.day.day}",
-            style: dayData.isExtended
-                ? style.extendedDayTextStyle
-                : style.dayTextStyle,
+            style: isExtended ? style.extendedDayTextStyle : style.dayTextStyle,
           ),
         ),
       ),

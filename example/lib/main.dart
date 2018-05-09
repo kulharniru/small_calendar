@@ -21,11 +21,6 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
   SmallCalendarPagerController _smallCalendarPagerController;
   SmallCalendarDataProvider _smallCalendarDataProvider;
 
-  bool _showWeekdayIndication;
-  bool _showTicks;
-
-  DayStyle _dayStyle = new DayStyle(showTicks: true);
-
   @override
   void initState() {
     super.initState();
@@ -44,9 +39,6 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
 
     _smallCalendarDataProvider = createSmallCalendarDataProvider();
 
-    _showWeekdayIndication = true;
-    _showTicks = true;
-
     _updateDisplayedMonthText();
   }
 
@@ -57,6 +49,10 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
       displayedMonthText =
           "Displayed Month: ${displayedMonth.year}.${displayedMonth.month}";
     });
+  }
+
+  Future<bool> _isTodayCallback(DateTime date) async {
+    return date.day == 1;
   }
 
   @override
@@ -77,19 +73,19 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
                   width: 250.0,
                   height: 250.0,
                   color: Colors.white,
-                  child: new SmallCalendarPager(
-                    controller: _smallCalendarPagerController,
-                    onMonthChanged: (DateTime displayedMonth) {
-                      _updateDisplayedMonthText();
-                    },
-                    pageBuilder: (BuildContext context, DateTime month) {
-                      return new SmallCalendar(
-                        month: month,
-                        dataProvider: _smallCalendarDataProvider,
-                        showWeekdayIndication: _showWeekdayIndication,
-                        dayStyle: _dayStyle,
-                      );
-                    },
+                  child: new SmallCalendarData(
+                    isTodayCallback: _isTodayCallback,
+                    child: new SmallCalendarPager(
+                      controller: _smallCalendarPagerController,
+                      pageBuilder: (BuildContext context, DateTime month) {
+                        return new SmallCalendar(
+                          month: month,
+                          showWeekdayIndication: true,
+                          weekdayIndicationStyle: new WeekdayIndicationStyle(),
+                          dayStyle: new DayStyle(),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -101,7 +97,7 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
                       child: new Column(
                         children: <Widget>[
                           new Text(displayedMonthText),
-                          new RaisedButton(onPressed: (){
+                          new RaisedButton(onPressed: () {
                             _smallCalendarDataProvider.refresh();
                           })
                         ],

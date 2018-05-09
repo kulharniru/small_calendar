@@ -34,7 +34,7 @@ class _SmallCalendarPageExampleState extends State<SmallCalendarPageExample> {
               color: Colors.white,
               width: 300.0,
               height: 300.0,
-              child: new SmallCalendar(
+              child: new SmallCalendarOLD(
                 month: new DateTime.now(),
                 dayStyle: new DayStyle(tick3Color: Colors.orange),
                 dataProvider: smallCalendarDataProvider,
