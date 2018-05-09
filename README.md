@@ -10,7 +10,7 @@ small_calendar widget.
 
 ```yaml
 dependencies:
-    small_calendar: "^0.3.0"
+    small_calendar: "^0.4.0"
 ```
 
 ### Import It
@@ -18,6 +18,30 @@ dependencies:
 ```dart
 import 'package:small_calendar/small_calendar.dart';
 ```
+
+## Use It
+
+1. Create new **SmallCalendarData** (this widget provides data to SmallCalendar-s down the widget tree)
+2. (Optionally) Create **SmallCalendarStyle** (to change the looks of SmallCalendar)
+3. Create **SmallCalendarPager** (to enable swiping between months)
+4. In pageBuilder of SmallCalendarPager create a new **SmallCalendar**
+
+If you wish to display SmallCalendar for only one Month (without the ability to swipe between months), omit the SmallCalendarPager. 
+
+```dart
+new SmallCalendarData(
+  child: new SmallCalendarStyle(
+    child: new SmallCalendarPager(
+      pageBuilder: (BuildContext context, DateTime month) {
+        return new SmallCalendar(
+            month: month,
+          );
+        },
+    ),
+  ),
+);
+```
+
 ## Styling
 
 <img src="https://raw.githubusercontent.com/ZedTheLed/small_calendar/master/images/items_explanation.png" height="300px"/>
@@ -31,8 +55,3 @@ import 'package:small_calendar/small_calendar.dart';
 * **7.** - textTickSeparation 
 * **8.** - selectedColor
 * **9.** - todayColor
-
-## Tips
-
-If you call setState() inside onDisplayedMonthChanged the calendar ticks might flicker. 
-To avoid this save SmallCalendar widget as a variable and only create a new SmallCalendar when you really need to (as is done in example).
