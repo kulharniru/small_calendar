@@ -9,6 +9,10 @@ import 'small_calendar_data_propagator.dart';
 import 'small_calendar_style.dart';
 import 'weekday_indicator.dart';
 
+/// SmallCalendar widget.
+///
+/// For this widget to work
+/// it must be nested inside [SmallCalendarData] and [SmallCalendarStyle].
 class SmallCalendar extends StatelessWidget {
   SmallCalendar({
     @required this.month,

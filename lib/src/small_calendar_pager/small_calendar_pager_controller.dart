@@ -6,13 +6,12 @@ import 'package:small_calendar/src/data/all.dart';
 import 'pager_position.dart';
 import 'small_calendar_pager.dart';
 
-typedef void JumpToMonthListener(Month month);
-
+/// A controller for [SmallCalendarPager].
 class SmallCalendarPagerController {
   static const _default_initial_page = 100000;
   static const _default_numOf_pages_after_initial_page = 100000;
 
-  /// Creates a new instance of [SmallCalendarPagerController].
+  /// Creates a small calendar pager controller.
   ///
   /// It converts all [DateTime]s to their internal representation ([Month]), and checks their validity.
   SmallCalendarPagerController._internal({
@@ -48,7 +47,7 @@ class SmallCalendarPagerController {
     }
   }
 
-  /// Creates a new instance of [SmallCalendarPagerController].
+  /// Creates a small calendar pager controller.
   ///
   /// If [initialMonth] is null, initial month will be the current month.
   /// [minimumMonth] and [maximumMonth] are inclusive.

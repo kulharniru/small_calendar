@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+/// Style of a day inside a [SmallCalendar].
 @immutable
 class DayStyle {
+  /// Creates a day style (all values required).
   DayStyle.raw({
     @required this.dayTextStyle,
     @required this.extendedDayTextStyle,
@@ -25,6 +27,9 @@ class DayStyle {
         assert(margin != null),
         assert(textTickSeparation != null);
 
+  /// Creates a day style.
+  ///
+  /// All null values are set to default values.
   factory DayStyle({
     TextStyle dayTextStyle,
     TextStyle extendedDayTextStyle,

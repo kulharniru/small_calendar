@@ -2,7 +2,7 @@ import 'dart:async';
 
 /// Callback with a [DateTime].
 ///
-/// Values except year, month and day are set to their default values.
+/// All values except year, month and day are set to their default values.
 typedef void DateCallback(DateTime date);
 
 /// Returns true/false if a [day] has some property.

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+/// Style of weekday indication bar inside a [SmallCalendar].
 @immutable
 class WeekdayIndicationStyle {
+  /// Creates weekday indication style (all values required).
   WeekdayIndicationStyle.raw({
     @required this.weekdayIndicationHeight,
     @required this.textStyle,
@@ -11,6 +13,9 @@ class WeekdayIndicationStyle {
         assert(textStyle != null),
         assert(backgroundColor != null);
 
+  /// Creates a weekday indication style.
+  ///
+  /// All null values are set to default values.
   factory WeekdayIndicationStyle({
     double weekdayIndicationHeight = 25.0,
     TextStyle textStyle,

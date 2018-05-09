@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 
 import 'style/all.dart';
 
+/// Widget that propagates small calendar style information down the tree.
 class SmallCalendarStyle extends InheritedWidget {
   /// Creates a new instance of [SmallCalendarStyle] (with all values required).
   SmallCalendarStyle.raw({

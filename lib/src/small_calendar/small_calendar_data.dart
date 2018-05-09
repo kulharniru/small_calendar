@@ -10,7 +10,7 @@ import 'small_calendar_data_propagator.dart';
 
 typedef void _ControllerRefreshListener();
 
-/// Class for controlling [SmallCalendarData].
+/// A controller for [SmallCalendarData].
 ///
 /// It is used for notifying attached [SmallCalendarData] to refresh its dayData.
 class SmallCalendarDataController {
@@ -36,8 +36,9 @@ class SmallCalendarDataController {
   }
 }
 
-/// Class that provides data to [SmallCalendar].
+/// Widget for providing data to [SmallCalendar].
 class SmallCalendarData extends StatefulWidget {
+  /// Creates widget for providing data to [SmallCalendar].
   SmallCalendarData({
     this.firstWeekday = DateTime.monday,
     this.dayNamesMap = oneLetterEnglishDayNames,
