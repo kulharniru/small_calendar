@@ -19,7 +19,6 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
   String displayedMonthText;
 
   SmallCalendarPagerController _smallCalendarPagerController;
-  SmallCalendarDataProvider _smallCalendarDataProvider;
 
   bool one = true;
 
@@ -38,8 +37,6 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
       minimumMonth: minimumMonth,
       maximumMonth: maximumMonth,
     );
-
-    _smallCalendarDataProvider = createSmallCalendarDataProvider();
 
     _updateDisplayedMonthText();
   }
@@ -119,56 +116,4 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
       ),
     );
   }
-}
-
-SmallCalendarDataProvider createSmallCalendarDataProvider() {
-  Future<bool> isTodayCallback(DateTime day) async {
-    DateTime now = new DateTime.now();
-    if (day.year == now.year && day.month == now.month && day.day == now.day) {
-      return true;
-    }
-
-    return false;
-  }
-
-  Future<bool> isSelectedCallback(DateTime day) async {
-    if (day.day == 10) {
-      return true;
-    }
-
-    return false;
-  }
-
-  Future<bool> hasTick1Callback(DateTime day) async {
-    if (day.day == 1 || day.day == 4 || day.day == 5) {
-      await new Future.delayed(new Duration(seconds: 3));
-      return true;
-    }
-
-    return false;
-  }
-
-  Future<bool> hasTick2Callback(DateTime day) async {
-    if (day.day == 2 || day.day == 4 || day.day == 5) {
-      return true;
-    }
-
-    return false;
-  }
-
-  Future<bool> hasTick3Callback(DateTime day) async {
-    if (day.day == 3 || day.day == 5) {
-      return true;
-    }
-
-    return false;
-  }
-
-  return new SmallCalendarDataProvider(
-    isTodayCallback: isTodayCallback,
-    isSelectedCallback: isSelectedCallback,
-    hasTick1Callback: hasTick1Callback,
-    hasTick2Callback: hasTick2Callback,
-    hasTick3Callback: hasTick3Callback,
-  );
 }
