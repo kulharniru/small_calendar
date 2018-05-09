@@ -1,50 +1,48 @@
 import 'package:meta/meta.dart';
-
-import 'month.dart';
+import 'package:quiver/core.dart';
 
 @immutable
 class Day {
-  final Month month;
-  final int day;
-
-  final bool isExtended;
-
   Day(
+    this.year,
     this.month,
     this.day,
-    this.isExtended,
-  );
+  )   : assert(year != null),
+        assert(month != null),
+        assert(day != null);
 
-  factory Day.fromDateTime(DateTime dateTime, bool isExtended) {
-    Month month = new Month(
+  factory Day.fromDateTime(DateTime dateTime) {
+    return new Day(
       dateTime.year,
       dateTime.month,
-    );
-
-    return new Day(
-      month,
       dateTime.day,
-      isExtended,
     );
   }
 
-  DateTime toDateTime() => new DateTime(
-        month.year,
-        month.month,
-        day,
-      );
+  final int year;
+
+  final int month;
+
+  final int day;
 
   @override
-  bool operator ==(Object other) {
-    if (other is Day) {
-      return month == other.month &&
-          day == other.day &&
-          isExtended == other.isExtended;
-    } else {
-      return false;
-    }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Day &&
+          runtimeType == other.runtimeType &&
+          year == other.year &&
+          month == other.month &&
+          day == other.day;
+
+  @override
+  int get hashCode => hash3(year, month, day);
+
+  DateTime toDateTime() {
+    return new DateTime(year, month, day);
   }
 
   @override
-  int get hashCode => month.hashCode ^ day.hashCode ^ isExtended.hashCode;
+  String toString() {
+    return 'Day:$year.$month.$day';
+  }
 }

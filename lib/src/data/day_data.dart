@@ -4,14 +4,6 @@ import 'day.dart';
 
 @immutable
 class DayData {
-  final Day day;
-
-  final bool isToday;
-  final bool isSelected;
-  final bool hasTick1;
-  final bool hasTick2;
-  final bool hasTick3;
-
   DayData({
     @required this.day,
     this.isToday = false,
@@ -25,6 +17,15 @@ class DayData {
         assert(hasTick1 != null),
         assert(hasTick2 != null),
         assert(hasTick3 != null);
+
+  /// Day fow which this [DayData] holds data.
+  final Day day;
+
+  final bool isToday;
+  final bool isSelected;
+  final bool hasTick1;
+  final bool hasTick2;
+  final bool hasTick3;
 
   DayData copyWithIsHasChanged({
     bool isToday,

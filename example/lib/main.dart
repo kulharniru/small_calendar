@@ -6,220 +6,209 @@ import 'package:small_calendar/small_calendar.dart';
 
 void main() {
   runApp(
-    new SmallCalendarExampleApp(),
+    new SmallCalendarExample(),
   );
 }
 
-class SmallCalendarExampleApp extends StatefulWidget {
+class SmallCalendarExample extends StatefulWidget {
   @override
-  State createState() => new _SmallCalendarExampleAppState();
+  _SmallCalendarExampleState createState() => new _SmallCalendarExampleState();
 }
 
-class _SmallCalendarExampleAppState extends State<SmallCalendarExampleApp> {
-  bool showWeekdayIndication = true;
-  bool showTicks = true;
-  SmallCalendarController smallCalendarController =
-      createSmallCalendarController();
+class _SmallCalendarExampleState extends State<SmallCalendarExample> {
+  String _displayedMonthText;
 
-  SmallCalendarController smallCalendarController2 =
-      new SmallCalendarController(
-          initialDate: new DateTime.now().add(new Duration(days: 30)));
+  bool _showWeekdayIndication = true;
 
-  String displayedMonthText;
+  bool _showTicks = true;
+
+  SmallCalendarPagerController _smallCalendarPagerController;
+
+  SmallCalendarDataController _smallCalendarDataController;
 
   @override
   void initState() {
     super.initState();
 
-    DateTime displayedMonth = smallCalendarController.displayedMonth;
-    displayedMonthText =
-        "Displaying ${displayedMonth.year}.${displayedMonth.month}";
+    DateTime initialMonth = new DateTime.now();
+    DateTime minimumMonth =
+        new DateTime(initialMonth.year - 1, initialMonth.month);
+    DateTime maximumMonth =
+        new DateTime(initialMonth.year + 1, initialMonth.month);
+
+    _smallCalendarPagerController = new SmallCalendarPagerController(
+      initialMonth: initialMonth,
+      minimumMonth: minimumMonth,
+      maximumMonth: maximumMonth,
+    );
+
+    _smallCalendarDataController = new SmallCalendarDataController();
+
+    _updateDisplayedMonthText();
   }
 
-  Widget buildSmallCalendar(BuildContext context) {
-    return new SmallCalendar(
-      firstWeekday: DateTime.monday,
-      controller: smallCalendarController,
-      dayStyle: new DayStyleData(
-        showTicks: showTicks,
-        tick3Color: Colors.yellow[700],
-      ),
-      showWeekdayIndication: showWeekdayIndication,
-      weekdayIndicationStyle: new WeekdayIndicationStyleData(
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      onDaySelected: (DateTime date) {
-        Scaffold.of(context).showSnackBar(new SnackBar(
-              content: new Text(
-                "Pressed on ${date.year}.${date.month}.${date.day}",
-              ),
-            ));
-      },
-      onDisplayedMonthChanged: (int year, int month) {
-        setState(() {
-          DateTime displayedMonth = smallCalendarController.displayedMonth;
-          displayedMonthText =
-              "Displaying ${displayedMonth.year}.${displayedMonth.month}";
-          print(displayedMonthText);
-        });
-      },
-    );
+  void _updateDisplayedMonthText() {
+    setState(() {
+      DateTime displayedMonth = _smallCalendarPagerController.displayedMonth;
+
+      _displayedMonthText =
+          "Displayed Month: ${displayedMonth.year}.${displayedMonth.month}";
+    });
+  }
+
+  Future<bool> _isTodayCallback(DateTime date) async {
+    DateTime now = new DateTime.now();
+
+    return now.year == date.year &&
+        now.month == date.month &&
+        now.day == date.day;
+  }
+
+  Future<bool> _isSelectedCallback(DateTime date) async {
+    return date.day == 10;
+  }
+
+  Future<bool> _hasTick1Callback(DateTime date) async {
+    return date.day == 1 || date.day == 4 || date.day == 5;
+  }
+
+  Future<bool> _hasTick2Callback(DateTime date) async {
+    return date.day == 2 || date.day == 4 || date.day == 5;
+  }
+
+  Future<bool> _hasTick3Callback(DateTime date) async {
+    await new Future.delayed(new Duration(seconds: 1));
+
+    return date.day == 3 || date.day == 5;
   }
 
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: "small_calendar example",
+      title: "Small Calendar example",
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text("small_calendar example"),
+          title: new Text("Small Calendar example"),
         ),
-        body:
-            // Creates an inner BuildContext so that the onDayPressed method in SmallCalendar
-            // can refer to the Scaffold with Scaffold.of().
-            new Builder(
-          builder: (BuildContext context) {
-            return new Column(
-              children: <Widget>[
-                // calendar
-                new Expanded(
+        // Creates an inner BuildContext so that the onDayPressed method in SmallCalendar
+        // can refer to the Scaffold with Scaffold.of().
+        body: new Builder(builder: (BuildContext context) {
+          return new Column(
+            children: <Widget>[
+              new Expanded(
                   child: new Container(
-                    color: Colors.grey[300],
-                    child: new Center(
-                      child: new Container(
-                        width: 250.0,
-                        height: 250.0,
-                        color: Theme.of(context).cardColor,
-                        // Small Calendar ------------------------------------------
-                        child: buildSmallCalendar(context),
-                        // ---------------------------------------------------------
-                      ),
+                color: Colors.grey[200],
+                child: new Center(
+                  child: new Container(
+                    width: 250.0,
+                    height: 250.0,
+                    color: Colors.white,
+
+                    /// SmallCalendarData
+                    child: new SmallCalendarData(
+                      firstWeekday: DateTime.monday,
+                      isTodayCallback: _isTodayCallback,
+                      isSelectedCallback: _isSelectedCallback,
+                      hasTick1Callback: _hasTick1Callback,
+                      hasTick2Callback: _hasTick2Callback,
+                      hasTick3Callback: _hasTick3Callback,
+                      controller: _smallCalendarDataController,
+
+                      /// SmallCalendarStyle
+                      child: new SmallCalendarStyle(
+                          showWeekdayIndication: _showWeekdayIndication,
+                          weekdayIndicationStyle: new WeekdayIndicationStyle(
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                          dayStyle: new DayStyle(
+                            showTicks: _showTicks,
+                            tick3Color: Colors.orange,
+                          ),
+
+                          /// SmallCalendarPager
+                          child: new SmallCalendarPager(
+                            controller: _smallCalendarPagerController,
+                            onMonthChanged: (DateTime month) {
+                              _updateDisplayedMonthText();
+                            },
+                            pageBuilder:
+                                (BuildContext context, DateTime month) {
+                              /// SmallCalendar
+                              return new SmallCalendar(
+                                month: month,
+                                onDayTap: (DateTime day) {
+                                  print(
+                                    "Pressed on: ${day.year}.${day.month}.${day.day}",
+                                  );
+
+                                  // shows SnackBar
+                                  Scaffold
+                                      .of(context)
+                                      .showSnackBar(new SnackBar(
+                                          content: new Text(
+                                        "Pressed on:  ${day.year}.${day.month}.${day.day} ",
+                                      )));
+                                },
+                              );
+                            },
+                          )),
                     ),
                   ),
                 ),
-                // controls
-                new Expanded(
-                  child: new SingleChildScrollView(
-                    child: new Column(
-                      children: <Widget>[
-                        // show weekday indication
-                        new Container(
-                          padding: new EdgeInsets.only(top: 4.0),
-                          child: new Text(displayedMonthText),
-                        ),
-                        new Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+              )),
+              new Expanded(
+                  child: new Container(
+                      margin: new EdgeInsets.symmetric(horizontal: 16.0),
+                      child: new SingleChildScrollView(
+                        child: new Column(
                           children: <Widget>[
-                            new Checkbox(
-                              value: showWeekdayIndication,
+                            new Padding(padding: new EdgeInsets.only(top: 8.0)),
+                            new Text(_displayedMonthText),
+                            new Padding(
+                              padding: new EdgeInsets.symmetric(vertical: 4.0),
+                              child: new RaisedButton(
+                                  child: new Text("Go To Today"),
+                                  onPressed: () {
+                                    _smallCalendarPagerController
+                                        .jumpToMonth(new DateTime.now());
+                                  }),
+                            ),
+                            new Divider(),
+                            new CheckboxListTile(
+                              value: _showWeekdayIndication,
+                              title: new Text("Show weekday indication"),
                               onChanged: (newValue) {
                                 setState(() {
-                                  showWeekdayIndication = newValue;
+                                  _showWeekdayIndication = newValue;
                                 });
                               },
                             ),
-                            new Text("Show Weekday Indication"),
-                          ],
-                        ),
-                        // show ticks
-                        new Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            new Checkbox(
-                                value: showTicks,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    showTicks = newValue;
-                                  });
-                                }),
-                            new Text("Show Ticks"),
-                          ],
-                        ),
-                        new RaisedButton(
-                          child: new Text("Go to today"),
-                          onPressed: () {
-                            smallCalendarController.goToToday();
-                          },
-                        ),
-                        new Container(
-                          height: 8.0,
-                        ),
-                        new RaisedButton(
-                          child: new Text("Refresh"),
-                          onPressed: () {
-                            //smallCalendarController.refreshDayInformation();
-                            setState(() {
-                              smallCalendarController =
-                                  smallCalendarController2;
-                            });
-                          },
-                        ),
-                        new Divider(),
-                        new Container(
-                          padding: new EdgeInsets.symmetric(horizontal: 16.0),
-                          child: new Text(
-                            """When you click on Refresh Button it might seem that nothing happened. But the calendar has actually refreshed, just that data is the same.
-
-For example purpuses:
+                            new Divider(),
+                            new CheckboxListTile(
+                              value: _showTicks,
+                              title: new Text("Show ticks"),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _showTicks = newValue;
+                                });
+                              },
+                            ),
+                            new Divider(),
+                            new Text("""For example purpuses:
                     * every first day of month has tick1
                     * every second day of month has tick2
                     * every third day of month has tick3
                     * every fourth day of month has tick1 and tick2
                     * every fifth day of month has tick1, tick2 and tick3
-                    * every tenth day of month is selected
-                    """,
-                          ),
+                    * every tenth day of month is selected"""),
+                            new Padding(padding: new EdgeInsets.only(top: 8.0)),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+                      ))),
+            ],
+          );
+        }),
       ),
     );
   }
-}
-
-SmallCalendarController createSmallCalendarController() {
-  Future<bool> isSelectedCallback(DateTime day) async {
-    if (day.day == 10) {
-      return true;
-    }
-
-    return false;
-  }
-
-  Future<bool> hasTick1Callback(DateTime day) async {
-    if (day.day == 1 || day.day == 4 || day.day == 5) {
-      return true;
-    }
-
-    return false;
-  }
-
-  Future<bool> hasTick2Callback(DateTime day) async {
-    if (day.day == 2 || day.day == 4 || day.day == 5) {
-      return true;
-    }
-
-    return false;
-  }
-
-  Future<bool> hasTick3Callback(DateTime day) async {
-    if (day.day == 3 || day.day == 5) {
-      return true;
-    }
-
-    return false;
-  }
-
-  return new SmallCalendarController(
-    isSelectedCallback: isSelectedCallback,
-    hasTick1Callback: hasTick1Callback,
-    hasTick2Callback: hasTick2Callback,
-    hasTick3Callback: hasTick3Callback,
-  );
 }

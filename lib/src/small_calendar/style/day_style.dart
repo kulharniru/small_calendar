@@ -1,12 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+/// Style of a day inside a [SmallCalendar].
 @immutable
-class DayStyleData {
-  /// [TextStyle] of day widget.
+class DayStyle {
+  /// Creates a day style (all values required).
+  DayStyle.raw({
+    @required this.dayTextStyle,
+    @required this.extendedDayTextStyle,
+    @required this.todayColor,
+    @required this.selectedColor,
+    @required this.showTicks,
+    @required this.tick1Color,
+    @required this.tick2Color,
+    @required this.tick3Color,
+    @required this.margin,
+    @required this.textTickSeparation,
+  })  : assert(dayTextStyle != null),
+        assert(extendedDayTextStyle != null),
+        assert(todayColor != null),
+        assert(selectedColor != null),
+        assert(showTicks != null),
+        assert(tick1Color != null),
+        assert(tick2Color != null),
+        assert(tick3Color != null),
+        assert(margin != null),
+        assert(textTickSeparation != null);
+
+  /// Creates a day style.
+  ///
+  /// All null values are set to default values.
+  factory DayStyle({
+    TextStyle dayTextStyle,
+    TextStyle extendedDayTextStyle,
+    Color todayColor,
+    Color selectedColor,
+    bool showTicks = true,
+    Color tick1Color,
+    Color tick2Color,
+    Color tick3Color,
+    EdgeInsetsGeometry margin =
+        const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+    double textTickSeparation = 2.0,
+  }) {
+    return new DayStyle.raw(
+      dayTextStyle: dayTextStyle ?? new TextStyle(),
+      extendedDayTextStyle:
+          extendedDayTextStyle ?? new TextStyle(fontWeight: FontWeight.w300),
+      todayColor: todayColor ?? Colors.blue[200],
+      selectedColor: selectedColor ?? Colors.purple[200],
+      showTicks: showTicks,
+      tick1Color: tick1Color ?? Colors.red,
+      tick2Color: tick2Color ?? Colors.green,
+      tick3Color: tick3Color ?? Colors.blue,
+      margin: margin,
+      textTickSeparation: textTickSeparation,
+    );
+  }
+
+  /// [TextStyle] of a day inside a [SmallCalendar].
   final TextStyle dayTextStyle;
 
-  /// [TextStyle] of day widget, that is representing a day of previous or next month.
+  /// [TextStyle] of a day inside a [SmallCalendar],
+  /// that is not a part of the month that a smallCalendar represents.
   final TextStyle extendedDayTextStyle;
 
   /// [Color] of indication that specific day is today.
@@ -33,58 +89,7 @@ class DayStyleData {
   /// Height of separation between day of month text and ticks.
   final double textTickSeparation;
 
-  DayStyleData.raw({
-    @required this.dayTextStyle,
-    @required this.extendedDayTextStyle,
-    @required this.todayColor,
-    @required this.selectedColor,
-    @required this.showTicks,
-    @required this.tick1Color,
-    @required this.tick2Color,
-    @required this.tick3Color,
-    @required this.margin,
-    @required this.textTickSeparation,
-  })
-      : assert(dayTextStyle != null),
-        assert(extendedDayTextStyle != null),
-        assert(todayColor != null),
-        assert(selectedColor != null),
-        assert(showTicks != null),
-        assert(tick1Color != null),
-        assert(tick2Color != null),
-        assert(tick3Color != null),
-        assert(margin != null),
-        assert(textTickSeparation != null);
-
-  factory DayStyleData({
-    TextStyle dayTextStyle,
-    TextStyle extendedDayTextStyle,
-    Color todayColor,
-    Color selectedColor,
-    bool showTicks = true,
-    Color tick1Color,
-    Color tick2Color,
-    Color tick3Color,
-    EdgeInsetsGeometry margin =
-        const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
-    double textTickSeparation = 2.0,
-  }) {
-    return new DayStyleData.raw(
-      dayTextStyle: dayTextStyle ?? new TextStyle(),
-      extendedDayTextStyle:
-          extendedDayTextStyle ?? new TextStyle(fontWeight: FontWeight.w300),
-      todayColor: todayColor ?? Colors.blue[200],
-      selectedColor: selectedColor ?? Colors.purple[200],
-      showTicks: showTicks,
-      tick1Color: tick1Color ?? Colors.red,
-      tick2Color: tick2Color ?? Colors.green,
-      tick3Color: tick3Color ?? Colors.blue,
-      margin: margin,
-      textTickSeparation: textTickSeparation,
-    );
-  }
-
-  DayStyleData copyWith({
+  DayStyle copyWith({
     TextStyle dayTextStyle,
     TextStyle extendedDayTextStyle,
     Color todayColor,
@@ -96,7 +101,7 @@ class DayStyleData {
     EdgeInsetsGeometry margin,
     double textTickSeparation,
   }) {
-    return new DayStyleData.raw(
+    return new DayStyle.raw(
       dayTextStyle: dayTextStyle ?? this.dayTextStyle,
       extendedDayTextStyle: extendedDayTextStyle ?? this.extendedDayTextStyle,
       todayColor: todayColor ?? this.todayColor,

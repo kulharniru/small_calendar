@@ -68,7 +68,8 @@ class _SmallCalendarPagerExampleState extends State<SmallCalendarPagerExample> {
                     pageBuilder: (BuildContext context, DateTime month) {
                       return new Center(
                         child: new Text(
-                            "year: ${month.year}\nmonth: ${month.month}"),
+                          "year: ${month.year}\nmonth: ${month.month}",
+                        ),
                       );
                     },
                   ),

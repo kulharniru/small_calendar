@@ -6,13 +6,12 @@ import 'package:small_calendar/src/data/all.dart';
 import 'pager_position.dart';
 import 'small_calendar_pager.dart';
 
-typedef void JumpToMonthListener(Month month);
-
+/// A controller for [SmallCalendarPager].
 class SmallCalendarPagerController {
   static const _default_initial_page = 100000;
   static const _default_numOf_pages_after_initial_page = 100000;
 
-  /// Creates a new instance of [SmallCalendarPagerController].
+  /// Creates a small calendar pager controller.
   ///
   /// It converts all [DateTime]s to their internal representation ([Month]), and checks their validity.
   SmallCalendarPagerController._internal({
@@ -28,15 +27,27 @@ class SmallCalendarPagerController {
             ? new Month.fromDateTime(maximumMonth)
             : null,
         // asserts
-        assert(_initMonth != null),
-        assert((_minMonth != null)
-            ? (_minMonth.isBefore(_initMonth) || _maxMonth == _initMonth)
-            : true),
-        assert((_maxMonth != null)
-            ? (_maxMonth.isAfter(_initMonth) || _maxMonth == _initMonth)
-            : true);
+        assert(_initMonth != null) {
+    // validates _minMonth
+    if (_minMonth != null) {
+      if (!(_minMonth.isBefore(_initMonth) || _minMonth == _initMonth)) {
+        throw new ArgumentError(
+          "Minimum month should be before or same month as initial month.",
+        );
+      }
+    }
 
-  /// Creates a new instance of [SmallCalendarPagerController].
+    // validates _maxMonth
+    if (_maxMonth != null) {
+      if (!(_maxMonth.isAfter(_initMonth) || _maxMonth == _initMonth)) {
+        throw new ArgumentError(
+          "Maximum month should be after or same month as initial month.",
+        );
+      }
+    }
+  }
+
+  /// Creates a small calendar pager controller.
   ///
   /// If [initialMonth] is null, initial month will be the current month.
   /// [minimumMonth] and [maximumMonth] are inclusive.
@@ -102,6 +113,15 @@ class SmallCalendarPagerController {
   ///
   /// If [month] is outside bounds of the controller the highest/lowest month is displayed.
   void jumpToMonth(DateTime month) {
+    assert(month != null);
+
+    if (_pagerPosition == null) {
+      print(
+        "Cannot jump to month, becouse no SmallCallendarPagger is attached.",
+      );
+      return;
+    }
+
     _pagerPosition.jumpToPage(
       pageOf(month),
     );
@@ -117,6 +137,13 @@ class SmallCalendarPagerController {
   }) {
     assert(duration != null);
     assert(curve != null);
+
+    if (_pagerPosition == null) {
+      print(
+        "Cannot animate to month, becouse no SmallCallendarPagger is attached.",
+      );
+      return;
+    }
 
     _pagerPosition.animateToPage(
       pageOf(month),

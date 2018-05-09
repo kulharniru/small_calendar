@@ -6,16 +6,18 @@ import 'small_calendar_pager_controller.dart';
 
 /// Signature for a function that creates a widget for a given [month].
 ///
-/// Values of [month] except year and month will be set to their default values.
+/// All values of [month] except year and month are set to their default values.
 typedef Widget SmallCalendarPageBuilder(BuildContext context, DateTime month);
 
+/// A scrollable list of Pages each representing a month.
 class SmallCalendarPager extends StatefulWidget {
   SmallCalendarPager._internal({
     @required this.scrollDirection,
     @required this.controller,
     @required this.pageBuilder,
     this.onMonthChanged,
-  })  : assert(controller != null),
+  })  : assert(scrollDirection != null),
+        assert(controller != null),
         assert(pageBuilder != null);
 
   factory SmallCalendarPager({
@@ -80,8 +82,6 @@ class _SmallCalendarPagerState extends State<SmallCalendarPager> {
 
       oldWidget.controller.detach();
       widget.controller.attach(_createPagerPosition());
-
-      setState(() {});
     }
   }
 
