@@ -1,10 +1,11 @@
 import 'package:meta/meta.dart';
 
+import 'day.dart';
+
 @immutable
 class DayData {
   DayData({
     @required this.day,
-    @required this.isExtended,
     this.isToday = false,
     this.isSelected = false,
     this.hasTick1 = false,
@@ -17,11 +18,8 @@ class DayData {
         assert(hasTick2 != null),
         assert(hasTick3 != null);
 
-  /// Day that this [DayData] represents.
-  final DateTime day;
-
-  /// True if this day is extended (does not belong to month that is displayed in).
-  final bool isExtended;
+  /// Day fow which this [DayData] holds data.
+  final Day day;
 
   final bool isToday;
   final bool isSelected;
@@ -38,7 +36,6 @@ class DayData {
   }) {
     return new DayData(
       day: day,
-      isExtended: isExtended,
       isToday: isToday ?? this.isToday,
       isSelected: isSelected ?? this.isSelected,
       hasTick1: hasTick1 ?? this.hasTick1,
