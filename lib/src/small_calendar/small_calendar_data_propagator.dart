@@ -3,23 +3,19 @@ import 'package:meta/meta.dart';
 
 import 'package:small_calendar/src/data/all.dart';
 
-typedef void OnNonExistentDayDataRequired(Day day);
-
-typedef DayData OnGenerateNonExistentDayData(Day day);
+typedef DayData OnGetDayData(Day day);
 
 class SmallCalendarDataPropagator extends InheritedWidget {
   SmallCalendarDataPropagator({
     @required this.firstWeekday,
     @required this.dayNamesMap,
     @required this.dayToDayDataMap,
-    @required this.onNonExistentDayDataRequired,
-    @required this.onGenerateNonExistentDayData,
+    @required this.onGetDayData,
     @required Widget child,
   })  : assert(firstWeekday != null),
         assert(dayNamesMap != null),
         assert(dayToDayDataMap != null),
-        assert(onNonExistentDayDataRequired != null),
-        assert(onGenerateNonExistentDayData != null),
+        assert(onGetDayData != null),
         super(child: child);
 
   final int firstWeekday;
@@ -28,29 +24,14 @@ class SmallCalendarDataPropagator extends InheritedWidget {
 
   final Map<Day, DayData> dayToDayDataMap;
 
-  final OnNonExistentDayDataRequired onNonExistentDayDataRequired;
-
-  final OnGenerateNonExistentDayData onGenerateNonExistentDayData;
+  final OnGetDayData onGetDayData;
 
   /// Returns [DayData] for a specified day.
-  DayData getDayData(Day day) {
-    if (dayToDayDataMap.containsKey(day)) {
-      return dayToDayDataMap[day];
-    } else {
-      onNonExistentDayDataRequired(day);
-
-      return onGenerateNonExistentDayData(day);
-    }
-  }
+  DayData getDayData(Day day) => onGetDayData(day);
 
   @override
   bool updateShouldNotify(SmallCalendarDataPropagator oldWidget) {
-    return firstWeekday != oldWidget.firstWeekday ||
-        dayNamesMap != oldWidget.dayNamesMap ||
-        dayToDayDataMap != oldWidget.dayToDayDataMap ||
-        onNonExistentDayDataRequired !=
-            oldWidget.onNonExistentDayDataRequired ||
-        onGenerateNonExistentDayData != onGenerateNonExistentDayData;
+    return true;
   }
 
   static SmallCalendarDataPropagator of(BuildContext context) {

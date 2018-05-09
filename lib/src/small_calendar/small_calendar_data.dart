@@ -88,12 +88,12 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
   /// Refreshes [DayData] of all [Day]s in [_dayToDayDataMap].
   void _refreshDayToDayDataMap() {
     for (Day day in _dayToDayDataMap.keys) {
-      _refreshDayData(day);
+      _refreshDayDataOfDay(day);
     }
   }
 
   /// Refreshes [DayData] of specified [day].
-  void _refreshDayData(Day day) {
+  void _refreshDayDataOfDay(Day day) {
     DateTime date = day.toDateTime();
 
     Future<bool> defaultIsHas() async {
@@ -147,20 +147,18 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
     );
   }
 
-  void _onNonExistentDayDataRequired(Day day) {
-    _dayToDayDataMap[day] = new DayData(
-      day: day,
-      isExtended: false,
-    );
+  /// Returns [DayData] for a specified [day].
+  ///
+  /// If required dayData is not yet generated,
+  /// it generates default dayData and start a refresh.
+  DayData _onGetDayData(Day day) {
+    if (!_dayToDayDataMap.containsKey(day)){
+      _dayToDayDataMap[day] = new DayData(day: day, isExtended: false);
 
-    _refreshDayData(day);
-  }
+      _refreshDayDataOfDay(day);
+    }
 
-  DayData _onGenerateNonExistentDayData(Day day) {
-    return new DayData(
-      day: day,
-      isExtended: false,
-    );
+    return _dayToDayDataMap[day];
   }
 
   @override
@@ -169,8 +167,7 @@ class _SmallCalendarDataState extends State<SmallCalendarData> {
       firstWeekday: widget.firstWeekday,
       dayNamesMap: widget.dayNamesMap,
       dayToDayDataMap: _dayToDayDataMap,
-      onNonExistentDayDataRequired: _onNonExistentDayDataRequired,
-      onGenerateNonExistentDayData: _onGenerateNonExistentDayData,
+      onGetDayData: _onGetDayData,
       child: widget.child,
     );
   }

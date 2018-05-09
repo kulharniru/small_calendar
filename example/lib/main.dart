@@ -21,6 +21,8 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
   SmallCalendarPagerController _smallCalendarPagerController;
   SmallCalendarDataProvider _smallCalendarDataProvider;
 
+  bool one = true;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +57,12 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
     return date.day == 1;
   }
 
+  Future<bool> _isTodayCallback2(DateTime date) async {
+    await new Future.delayed(new Duration(seconds: 3));
+
+    return date.day == 2;
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -74,7 +82,7 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
                   height: 250.0,
                   color: Colors.white,
                   child: new SmallCalendarData(
-                    isTodayCallback: _isTodayCallback,
+                    isTodayCallback: one ? _isTodayCallback : _isTodayCallback2,
                     child: new SmallCalendarPager(
                       controller: _smallCalendarPagerController,
                       pageBuilder: (BuildContext context, DateTime month) {
@@ -98,7 +106,9 @@ class _SmallCalendarExampleState extends State<SmallCalendarExample> {
                         children: <Widget>[
                           new Text(displayedMonthText),
                           new RaisedButton(onPressed: () {
-                            _smallCalendarDataProvider.refresh();
+                            setState(() {
+                              one = !one;
+                            });
                           })
                         ],
                       ),
