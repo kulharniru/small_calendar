@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:small_calendar/small_calendar_pager.dart';
+import 'package:small_calendar/src/OLD/small_calendar_pager.dart';
 
 void main() {
   runApp(
