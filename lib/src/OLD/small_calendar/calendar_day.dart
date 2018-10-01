@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import 'package:small_calendar/src/data/day_data.dart';
+import '../data/all.dart';
 
 import 'style/day_style.dart';
 import 'callbacks.dart';
